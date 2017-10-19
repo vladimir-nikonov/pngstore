@@ -1,0 +1,241 @@
+.dcm-stage-container.reorderable-container {
+	flex-basis: 100%;
+	min-height: 600px;
+	overflow: none !important;
+	margin: 5px;
+	background-color: white;
+	border: none !important;
+	outline: none;
+	padding-top: 20px;
+	padding-left: 0px !important;
+}
+
+body {
+	overflow: auto !important;;
+}
+
+.kanban-board-items {
+	width: 100%;
+	display: flex;
+	margin-bottom: 10px;
+	padding-left: 15px;
+}
+
+.kanban-board-tools {
+	position: fixed;
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+	justify-content: center;
+	width: 100%;
+}
+
+.kanban-unsuccessful-columns {
+	display: none;
+	align-items: stretch;
+	position: fixed;
+	margin: 10px;
+	bottom: 50px;
+	background-color: rgb(248, 248, 248);
+	padding: 5px;
+	width: 90%;
+	background: white;.dcm-stage {
+	height: auto !important;
+}
+
+.dcm-stage .stage-header .stage-tools {
+	display: flex;
+	align-items: center;
+	flex-direction: inherit;
+	justify-content: space-between;
+}
+
+.dcm-stage .stage-header .stage-tools .t-label {
+	width: auto;
+}
+
+.kanban-column-summary {
+	/* min-width: 15px; */
+	width: auto;
+	color: white;
+	height: 15px;
+	/* border-radius: 20%; */
+	text-align: center;
+	line-height: 1.5;
+	border: 1px solid white;
+	padding-left: 4px;
+	padding-right: 4px
+}
+
+.dcm-stage .stage-header.inner-arrow .add-btn-ct {
+	cursor: auto;
+}
+
+.dcm-stage .stage-header.outer-rounded .add-btn-ct {
+	display: none;
+}
+
+.dcm-stage[isSuccessfull=false] {
+	display: none;
+}
+
+*[showUnsuccessfulColumns=true] .dcm-stage[isSuccessfull=false] {
+	display: block;
+}
+
+.reorderable-container .reorderable {
+	width:100%;
+	height:1px;
+	opacity: 0;
+}
+
+.reorderable-container .reorderable-zero-element {
+	width:100%;
+	height:1px;
+	opacity: 0;
+	background: none;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+.dcm-stage .dcm-stage-items {
+	height: 100% !important;
+	padding: 3px;
+	top: 5px;
+}
+
+.drop-zone-hint {
+	outline: 1px solid #c3c3c3;
+	background-color: rgb(248, 248, 248);
+	min-height: 100px;
+	box-shadow: none;
+}
+	z-index: 998;
+	outline: 1px solid #c3c3c3;
+	box-shadow: none;
+}
+
+*[showUnsuccessfulColumns=true] .kanban-unsuccessful-columns {
+	display: flex;
+}
+
+.kanban-unsuccessful-column {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+	height: 50px;
+	width: 100%;
+	margin: 3px;
+	z-index: 999;
+	margin: 10px;
+	outline: 1px solid silver;
+}
+
+.kanban-unsuccessful-column:after {
+	content: attr(caption);
+	font-size: 13px;
+}
+
+.kanban-element-drag-enter {
+	outline: 1px solid #8ecb60;
+}
+
+.kanban-element-wrap {
+	width: 232px;
+	border: solid 1px #e2e2e2;
+	font-family: "Bpmonline Open Sans", serif;
+	font-size: 12px;
+	color: black;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	margin-top: 12px;
+	background: white;
+}
+	
+.kanban-element-top {
+	line-height: 2.3;
+	text-align: left;
+	font-weight: bold;
+	color: #4E81DE;
+	font-size: 14;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	padding-left: 10px;
+	padding-right: 5px;
+	padding-bottom: 2px;
+	min-height: 29px;
+}
+
+.kanban-element-top, .kanban-element-top a {
+	color: #4E81DE;
+	text-decoration: none;
+}
+
+.kanban-element-bottom {
+	display:flex;
+	flex-direction: row;
+	padding-bottom: 4px;
+}
+
+.kanban-element-image-container {
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	flex-grow: inherit;
+	flex-wrap: nowrap;
+	padding: 0px 0px 5px 10px;
+}
+	
+.kanban-element-image {
+	width: 48px;
+	height: 48px;
+	background-repeat: no-repeat;
+	border-radius: 50%;
+	background-size: cover;
+	border: solid 1px #e2e2e2;
+	display: block;
+}
+
+.kanban-element-additional-columns {
+	display: flex;
+	flex-flow: row wrap;
+	align-content: flex-start;
+	width: 100%;
+	padding: 0px 8px 0px 10px;
+	width: 155px;
+}
+
+.kanban-element-additional-column {
+	width:100%;
+	display: flex;
+	flex-direction: row;
+	padding-bottom: 5px;
+	align-items: baseline;
+	height:auto;
+	margin-top: -5px;
+	min-height: 24px;
+}
+
+.column-caption {
+	display:none;
+}
+
+.column-value {
+	width: 100%;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 14px;
+}
+
+.column-type-number .column-value {
+	font-size: 20px;
+	font-weight: bold;
+	color: green;
+	margin-top: 0px;
+	text-align: right;
+}
