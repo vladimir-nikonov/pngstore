@@ -1,6 +1,6 @@
 /*
  * Kanban
- * Copyright(c) 2017, bpmonline labs.
+ * Copyright(c) 2017, bpm'online labs.
  */
 
 
