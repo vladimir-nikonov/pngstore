@@ -1,0 +1,48 @@
+var cdnUrl = "http://localhost/cdn/kanban/build/build/";
+requirejs.config({
+	"paths": {
+		"KanbanSection": cdnUrl + "KanbanSection",
+		"CollectionDataStorage": cdnUrl + "CollectionDataStorage",
+		"CaseDataStorage": cdnUrl + "CaseDataStorage",
+		"KanbanElementViewModel": cdnUrl + "KanbanElementViewModel",
+		"KanbanColumnViewModel": cdnUrl + "KanbanColumnViewModel",
+		"KanbanBoard": cdnUrl + "KanbanBoard",
+		"KanbanColumn": cdnUrl + "KanbanColumn",
+		"KanbanElement": cdnUrl + "KanbanElement",
+		"KanbanColumnViewConfigBuilder": cdnUrl + "KanbanColumnViewConfigBuilder",
+		"KanbanBoardViewGenerator": cdnUrl + "KanbanBoardViewGenerator"
+	},
+	"shim": {
+		"KanbanSection": {
+			"deps": ["CaseDataStorage", "KanbanBoardViewGenerator"]
+		},
+		"KanbanElementViewModel": {
+			"deps": ["DcmStageElementViewModel"]
+		},
+		"KanbanColumnViewModel": {
+			"deps": ["DcmStageViewModel", "KanbanColumnViewConfigBuilder"]
+		},
+		"KanbanBoard": {
+			"deps": ["css!KanbanBoard", "DcmStageContainer", "KanbanColumn"]
+		},
+		"CaseDataStorage": {
+			"deps": ["CollectionDataStorage", "KanbanColumnViewModel", "KanbanElementViewModel"]
+		},
+		"KanbanColumn": {
+			"deps": ["DcmStage", "KanbanElement", "css!KanbanColumn"]
+		},
+		"KanbanElement": {
+			"deps": ["DcmStageElement", "css!KanbanElement"]
+		},
+		"KanbanColumnViewConfigBuilder": {
+			"deps": ["KanbanColumn"]
+		},
+		"KanbanBoardViewGenerator": {
+			"deps": ["ViewGeneratorV2", "KanbanBoard"]
+		}
+	}
+});
+
+define("BaseSectionV2", ["KanbanSection"], function(kanbanSection) {
+	return kanbanSection;
+});

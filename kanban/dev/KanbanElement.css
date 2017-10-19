@@ -1,0 +1,101 @@
+.kanban-element-drag-enter {
+	outline: 1px solid #8ecb60;
+}
+
+.kanban-element-wrap {
+	width: 232px;
+	border: solid 1px #e2e2e2;
+	font-family: "Bpmonline Open Sans", serif;
+	font-size: 12px;
+	color: black;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	margin-top: 12px;
+	background: white;
+}
+	
+.kanban-element-top {
+	line-height: 2.3;
+	text-align: left;
+	font-weight: bold;
+	color: #4E81DE;
+	font-size: 14;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	padding-left: 10px;
+	padding-right: 5px;
+	padding-bottom: 2px;
+	min-height: 29px;
+}
+
+.kanban-element-top, .kanban-element-top a {
+	color: #4E81DE;
+	text-decoration: none;
+}
+
+.kanban-element-bottom {
+	display:flex;
+	flex-direction: row;
+	padding-bottom: 4px;
+}
+
+.kanban-element-image-container {
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	flex-grow: inherit;
+	flex-wrap: nowrap;
+	padding: 0px 0px 5px 10px;
+}
+	
+.kanban-element-image {
+	width: 48px;
+	height: 48px;
+	background-repeat: no-repeat;
+	border-radius: 50%;
+	background-size: cover;
+	border: solid 1px #e2e2e2;
+	display: block;
+}
+
+.kanban-element-additional-columns {
+	display: flex;
+	flex-flow: row wrap;
+	align-content: flex-start;
+	width: 100%;
+	padding: 0px 8px 0px 10px;
+	width: 155px;
+}
+
+.kanban-element-additional-column {
+	width:100%;
+	display: flex;
+	flex-direction: row;
+	padding-bottom: 5px;
+	align-items: baseline;
+	height:auto;
+	margin-top: -5px;
+	min-height: 24px;
+}
+
+.column-caption {
+	display:none;
+}
+
+.column-value {
+	width: 100%;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 14px;
+}
+
+.column-type-number .column-value {
+	font-size: 20px;
+	font-weight: bold;
+	color: green;
+	margin-top: 0px;
+	text-align: right;
+}

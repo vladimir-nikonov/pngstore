@@ -1,0 +1,68 @@
+.dcm-stage-container.reorderable-container {
+	flex-basis: 100%;
+	min-height: 600px;
+	overflow: none !important;
+	margin: 5px;
+	background-color: white;
+	border: none !important;
+	outline: none;
+	padding-top: 20px;
+	padding-left: 0px !important;
+}
+
+body {
+	overflow: auto !important;;
+}
+
+.kanban-board-items {
+	width: 100%;
+	display: flex;
+	margin-bottom: 10px;
+	padding-left: 15px;
+}
+
+.kanban-board-tools {
+	position: fixed;
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+	justify-content: center;
+	width: 100%;
+}
+
+.kanban-unsuccessful-columns {
+	display: none;
+	align-items: stretch;
+	position: fixed;
+	margin: 10px;
+	bottom: 50px;
+	background-color: rgb(248, 248, 248);
+	padding: 5px;
+	width: 90%;
+	background: white;
+	z-index: 998;
+	outline: 1px solid #c3c3c3;
+	box-shadow: none;
+}
+
+*[showUnsuccessfulColumns=true] .kanban-unsuccessful-columns {
+	display: flex;
+}
+
+.kanban-unsuccessful-column {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+	height: 50px;
+	width: 100%;
+	margin: 3px;
+	z-index: 999;
+	margin: 10px;
+	outline: 1px solid silver;
+}
+
+.kanban-unsuccessful-column:after {
+	content: attr(caption);
+	font-size: 13px;
+}
