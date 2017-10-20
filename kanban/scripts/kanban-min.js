@@ -1,6 +1,6 @@
 /*
  * Kanban
- * Copyright(c) 2017, bpm'online labs.
+ * Copyright(c) 2017, bpm'online labs
  */
 Ext.define("Terrasoft.Kanban.CaseDataStorage",{extend:"Terrasoft.BaseViewModelCollection",itemClass:"Terrasoft.KanbanColumnViewModel",dcmCaseSchema:null,pageRowCount:7,filters:null,elementColumnConfig:null,lastStageFilters:null,init:function(){this.callParent(arguments);this.addEvent("beforeKanbanElementSave","afterKanbanElementSaved")},_getColumnsIds:function(elementColumnsConfig){return elementColumnsConfig.map(function(i){return i.path})},setFilter:function(filters,lastStageFilters){var needReload=!1;if(!Terrasoft.isEqual(this.filters,filters)){this.filters=filters;needReload=!0}
 if(!Terrasoft.isEqual(this.lastStageFilters,lastStageFilters)){this.lastStageFilters=lastStageFilters;needReload=!0}
