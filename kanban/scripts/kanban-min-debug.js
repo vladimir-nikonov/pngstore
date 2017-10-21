@@ -1740,4 +1740,3 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 
 	};
 });
-
