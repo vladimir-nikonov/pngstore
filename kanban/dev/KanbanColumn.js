@@ -1,10 +1,3 @@
-////TODO:
-// 1. hide add stage buttons
-// 2. avoid stage dragging
-
-/**
- * @class Terrasoft.controls.KanbanColumn
- */
 Ext.define("Terrasoft.controls.KanbanColumn", {
 	extend: "Terrasoft.DcmStage",
 	alternateClassName: "Terrasoft.KanbanColumn",

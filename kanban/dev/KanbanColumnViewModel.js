@@ -1,7 +1,3 @@
-
-/**
- * @class Terrasoft.controls.KanbanColumnViewModel
- */
 Ext.define("Terrasoft.controls.KanbanColumnViewModel", {
 	extend: "Terrasoft.DcmStageViewModel",
 	alternateClassName: "Terrasoft.KanbanColumnViewModel",

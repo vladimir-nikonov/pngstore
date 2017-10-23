@@ -3,7 +3,6 @@
  * Copyright(c) 2017, bpm'online labs
  */
 
-
 Ext.define("Terrasoft.Kanban.CaseDataStorage", {
 
 	extend: "Terrasoft.BaseViewModelCollection",
@@ -1740,3 +1739,4 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 
 	};
 });
+

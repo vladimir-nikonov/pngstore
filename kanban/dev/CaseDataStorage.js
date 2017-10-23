@@ -1,4 +1,3 @@
-
 Ext.define("Terrasoft.Kanban.CaseDataStorage", {
 
 	extend: "Terrasoft.BaseViewModelCollection",

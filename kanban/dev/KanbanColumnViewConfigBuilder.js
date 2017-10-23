@@ -1,7 +1,4 @@
-/**
- * @class Terrasoft.controls.KanbanColumnViewConfigBuilder
- */
-Ext.define("Terrasoft.controls.KanbanColumnViewConfigBuilder", {
+﻿Ext.define("Terrasoft.controls.KanbanColumnViewConfigBuilder", {
 	extend: "Terrasoft.BaseObject",
 	alternateClassName: "Terrasoft.KanbanColumnViewConfigBuilder",
 

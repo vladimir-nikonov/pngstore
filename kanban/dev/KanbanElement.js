@@ -1,6 +1,3 @@
-/**
- * @class Terrasoft.controls.KanbanElement
-*/
 Ext.define("Terrasoft.controls.KanbanElement", {
 	extend: "Terrasoft.DcmStageElement",
 	alternateClassName: "Terrasoft.KanbanElement",
