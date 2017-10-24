@@ -456,7 +456,6 @@ Ext.define("Terrasoft.Kanban.DataStorage", {
 	}
 });
 
-
 Ext.define("Terrasoft.controls.KanbanBoard", {
 	extend: "Terrasoft.DcmStageContainer",
 	alternateClassName: "Terrasoft.KanbanBoard",
@@ -651,11 +650,6 @@ define("KanbanBoardViewGenerator", [], function() {
 	return Ext.create(viewGenerator);
 });
 
-////TODO:
-// 1. hide add stage buttons
-// 2. avoid stage dragging
-
-
 Ext.define("Terrasoft.controls.KanbanColumn", {
 	extend: "Terrasoft.DcmStage",
 	alternateClassName: "Terrasoft.KanbanColumn",
@@ -721,7 +715,6 @@ Ext.define("Terrasoft.controls.KanbanColumn", {
 	}
 
 });
-
 
 Ext.define("Terrasoft.controls.KanbanColumnViewConfigBuilder", {
 	extend: "Terrasoft.BaseObject",
@@ -829,8 +822,6 @@ Ext.define("Terrasoft.controls.KanbanColumnViewConfigBuilder", {
 
 });
 
-
-
 Ext.define("Terrasoft.controls.KanbanColumnViewModel", {
 	extend: "Terrasoft.DcmStageViewModel",
 	alternateClassName: "Terrasoft.KanbanColumnViewModel",
@@ -917,7 +908,6 @@ Ext.define("Terrasoft.controls.KanbanColumnViewModel", {
 	}
 
 });
-
 
 Ext.define("Terrasoft.controls.KanbanElement", {
 	extend: "Terrasoft.DcmStageElement",
@@ -1044,7 +1034,6 @@ Ext.define("Terrasoft.controls.KanbanElement", {
 	}
 
 });
-
 
 Ext.define("Terrasoft.controls.KanbanElementViewModel", {
 	extend: "Terrasoft.DcmStageElementViewModel",
