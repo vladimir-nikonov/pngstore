@@ -1146,7 +1146,7 @@ Ext.define("Terrasoft.controls.KanbanElementViewModel", {
 
 define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUtilities, ConfigurationEnums) {
 	return {
-
+		//
 		attributes: {
 			"DcmCase": {
 				dataValueType: Terrasoft.DataValueType.LOOKUP,
@@ -1669,7 +1669,10 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 					"itemType": Terrasoft.ViewItemType.CONTAINER,
 					"classes": {wrapClassName: ["case-filter", "filter-inner-container", "custom-filter-button-container"]},
 					"items": [],
-					"domAttributes": {bindTo: "getKanbanDomAttributes"}
+					"domAttributes": {bindTo: "getKanbanDomAttributes"},
+					"visible": {
+						"bindTo": "_isKanban",
+					}
 				}
 			},
 			{
