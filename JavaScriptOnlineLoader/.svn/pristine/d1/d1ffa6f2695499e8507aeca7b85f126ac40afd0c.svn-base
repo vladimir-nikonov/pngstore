@@ -1,9 +1,0 @@
-#ViewModuleContainer {
-	display: flex;
-	align-items: center;
-	flex-direction: column;
-}
-
-body:not([maskstate]) {
-    background: none
-}
