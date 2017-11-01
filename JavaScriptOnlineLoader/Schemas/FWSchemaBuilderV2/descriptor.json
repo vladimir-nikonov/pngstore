@@ -1,0 +1,10 @@
+﻿{
+  "Descriptor": {
+    "UId": "ac2025f9-d70a-4cc2-bfcd-6051082ce17f",
+    "Name": "FWSchemaBuilderV2",
+    "ModifiedOnUtc": "\/Date(1469535197000)\/",
+    "ManagerName": "ClientUnitSchemaManager",
+    "Caption": "FWSchemaBuilderV2",
+    "DependsOn": []
+  }
+}

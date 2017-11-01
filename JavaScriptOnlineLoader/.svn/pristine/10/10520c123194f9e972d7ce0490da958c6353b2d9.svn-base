@@ -1,0 +1,10 @@
+﻿{
+  "Descriptor": {
+    "UId": "2e9c1384-a346-4101-84fc-737d24753b9b",
+    "Name": "FileWatcher",
+    "ModifiedOnUtc": "\/Date(1468336737000)\/",
+    "ManagerName": "SourceCodeSchemaManager",
+    "Caption": "FileWatcher",
+    "DependsOn": []
+  }
+}

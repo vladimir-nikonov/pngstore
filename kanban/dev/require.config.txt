@@ -1,4 +1,4 @@
-var cdnUrl = "http://localhost/cdn/kanban/build/build/";
+var cdnUrl = "http://localhost:90/kanban/dev/";
 requirejs.config({
 	"paths": {
 		"KanbanSection": cdnUrl + "KanbanSection",
