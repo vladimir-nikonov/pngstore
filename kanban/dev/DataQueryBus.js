@@ -9,8 +9,6 @@ Ext.define("Terrasoft.extensions.DataQueryBus", {
 		_queries: []
 	},
 	
-	_id: null,
-
 	_timerId: null,
 
 	_delay: 5,
@@ -21,20 +19,26 @@ Ext.define("Terrasoft.extensions.DataQueryBus", {
 
 	_scope: null,
 
+	useBatch: false,
+
 	constructor: function() {
-		this._id = Terrasoft.generateGUID();
+		this.useBatch = Terrasoft.Features.getIsEnabled("UseDataQueryBus");
 		this.callParent(arguments);
 	},
 
 	getEntityCollection: function(callback, scope) {
-		this._callback = callback;
-		this._scope = scope;
-		Terrasoft.EntitySchemaQuery._queries.push(this);
-		clearTimeout(this._timerId);
-		if (Terrasoft.EntitySchemaQuery._queries.length == this._batchSize) {
-			this._execute();
+		if (this.useBatch) {
+			this._callback = callback;
+			this._scope = scope;
+			Terrasoft.EntitySchemaQuery._queries.push(this);
+			clearTimeout(this._timerId);
+			if (Terrasoft.EntitySchemaQuery._queries.length == this._batchSize) {
+				this._execute();
+			} else {
+				this._timerId = Ext.defer(this._execute, this._delay, this);
+			}
 		} else {
-			this._timerId = Ext.defer(this._execute, this._delay, this);
+			this.callParent(arguments);
 		}
 	},
 
@@ -48,13 +52,10 @@ Ext.define("Terrasoft.extensions.DataQueryBus", {
 				batchMap.push(query);
 				batch.add(query);
 			});
-			console.log("queries lenght - " + queries.length);
 			Terrasoft.EntitySchemaQuery._queries = [];
 			var responseFunction = function(response) {
 				var batchQueries = Terrasoft.EntitySchemaQuery._queryMap[batchId];
 				delete Terrasoft.EntitySchemaQuery._queryMap[batchId];
-				console.log("batchId - " + batchId);
-				console.log("call query with number of resopnses - " + batchQueries.length);
 				for(var i = 0; i < batchQueries.length; i++) {
 					var query = batchQueries[i];
 					var queryResponse = response.queryResults[i];

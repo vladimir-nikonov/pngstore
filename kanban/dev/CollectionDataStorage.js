@@ -118,7 +118,8 @@ Ext.define("Terrasoft.Kanban.DataStorage", {
 
 	_createTotalCountEsq: function() {
 		var esq = Ext.create("Terrasoft.EntitySchemaQuery", {
-			rootSchema: this.collectionEntitySchema
+			rootSchema: this.collectionEntitySchema,
+			useBatch: true
 		});
 		esq.addAggregationSchemaColumn("Id", Terrasoft.AggregationType.COUNT, this._countColumnName);
 		if (this.filters) {
@@ -136,7 +137,8 @@ Ext.define("Terrasoft.Kanban.DataStorage", {
 			rootSchema: this.collectionEntitySchema,
 			rowCount: this.rowCount,
 			isPageable: this.rowCount > 0,
-			rowViewModelClassName: this.itemClass
+			rowViewModelClassName: this.itemClass,
+			useBatch: true
 		});
 		var columns = this.columnsConfig;
 		var map = {};
