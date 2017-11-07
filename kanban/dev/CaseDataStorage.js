@@ -102,7 +102,7 @@ Ext.define("Terrasoft.Kanban.CaseDataStorage", {
 	reloadData: function(config, callback, scope) {
 		callback = callback || Terrasoft.emptyFn;
 		var self = this;
-		Terrasoft.eachAsync(self.getItems(), function(kanbanColumn, next) {
+		Terrasoft.each(self.getItems(), function(kanbanColumn, next) {
 			var kanbanElements = kanbanColumn.get("ViewModelItems");
 			kanbanElements.clear();
 			kanbanElements.filters = self._getFilters(kanbanColumn.get("Id"));

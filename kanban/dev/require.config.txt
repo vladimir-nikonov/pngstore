@@ -10,11 +10,12 @@ requirejs.config({
 		"KanbanColumn": cdnUrl + "KanbanColumn",
 		"KanbanElement": cdnUrl + "KanbanElement",
 		"KanbanColumnViewConfigBuilder": cdnUrl + "KanbanColumnViewConfigBuilder",
-		"KanbanBoardViewGenerator": cdnUrl + "KanbanBoardViewGenerator"
+		"KanbanBoardViewGenerator": cdnUrl + "KanbanBoardViewGenerator",
+		"DataQueryBus": cdnUrl + "DataQueryBus"
 	},
 	"shim": {
 		"KanbanSection": {
-			"deps": ["CaseDataStorage", "KanbanBoardViewGenerator"]
+			"deps": ["CaseDataStorage", "KanbanBoardViewGenerator", "DataQueryBus"]
 		},
 		"KanbanElementViewModel": {
 			"deps": ["DcmStageElementViewModel"]
