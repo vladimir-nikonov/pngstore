@@ -2,13 +2,12 @@ Ext.define("Terrasoft.extensions.DataQueryBus", {
 
 	alternateClassName: "Terrasoft.DataQueryBus",
 	
-	override: "Terrasoft.EntitySchemaQuery",
+	override: "Terrasoft.DataProvider",
 
-	statics: {
-		_queryMap: {},
-		_queries: []
-	},
-	
+	_queryMap: {},
+
+	_queries: [],
+
 	_timerId: null,
 
 	_delay: 5,
@@ -19,20 +18,15 @@ Ext.define("Terrasoft.extensions.DataQueryBus", {
 
 	_scope: null,
 
-	useBatch: false,
+	_useBatch: Terrasoft.Features.getIsEnabled("UseDataQueryBus"),
 
-	constructor: function() {
-		this.useBatch = Terrasoft.Features.getIsEnabled("UseDataQueryBus");
-		this.callParent(arguments);
-	},
-
-	getEntityCollection: function(callback, scope) {
-		if (this.useBatch) {
-			this._callback = callback;
-			this._scope = scope;
-			Terrasoft.EntitySchemaQuery._queries.push(this);
+	executeQuery: function(query, callback, scope) {
+		if (query.operationType == 0 && (this._useBatch || query.useBatch)) {
+			query._callback = callback;
+			query._scope = scope;
+			this._queries.push(query);
 			clearTimeout(this._timerId);
-			if (Terrasoft.EntitySchemaQuery._queries.length == this._batchSize) {
+			if (this._queries.length == this._batchSize) {
 				this._execute();
 			} else {
 				this._timerId = Ext.defer(this._execute, this._delay, this);
@@ -43,24 +37,24 @@ Ext.define("Terrasoft.extensions.DataQueryBus", {
 	},
 
 	_execute: function() {
-		var queries = Terrasoft.EntitySchemaQuery._queries;
+		var queries = this._queries;
 		if (queries.length > 0) {
 			var batchId = Terrasoft.generateGUID();
 			var batch = Ext.create("Terrasoft.BatchQuery");
-			var batchMap = Terrasoft.EntitySchemaQuery._queryMap[batchId] = [];
+			var batchMap = this._queryMap[batchId] = [];
 			Terrasoft.each(queries, function(query) {
 				batchMap.push(query);
 				batch.add(query);
 			});
-			Terrasoft.EntitySchemaQuery._queries = [];
+			this._queries = [];
 			var responseFunction = function(response) {
-				var batchQueries = Terrasoft.EntitySchemaQuery._queryMap[batchId];
-				delete Terrasoft.EntitySchemaQuery._queryMap[batchId];
+				var batchQueries = this._queryMap[batchId];
+				delete this._queryMap[batchId];
 				for(var i = 0; i < batchQueries.length; i++) {
 					var query = batchQueries[i];
 					var queryResponse = response.queryResults[i];
 					queryResponse.success = true;
-					query.parseResponse(queryResponse, query._callback, query._scope);
+					query._callback.call(query._scope, queryResponse);
 				}
 			};
 			batch.execute(responseFunction, this);
