@@ -1,3 +1,9 @@
+Ext.define("Terrasoft.extensions.BatchableEntitySchemaQuery", {
+	alternateClassName: "Terrasoft.BatchableEntitySchemaQuery",
+	override: "Terrasoft.EntitySchemaQuery",
+	useBatch: false
+});
+
 Ext.define("Terrasoft.extensions.DataQueryBus", {
 
 	alternateClassName: "Terrasoft.DataQueryBus",
