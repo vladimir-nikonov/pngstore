@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="issues">
+    <option name="index">
+      <map>
+        <entry key="/Dummy.txt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/KanbanBoard.css">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/KanbanBoard.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../../../../bpmonline/780/TSBpm/Src/Lib/Terrasoft.WebApp.Loader/Terrasoft.WebApp/Terrasoft.Configuration/Pkg/Kanban/Schemas/BaseSectionV2/BaseSectionV2.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../../../../bpmonline/780PackageStore/TerrasoftPackages/DcmDesigner/Schemas/DcmActivityUserTaskPropertiesPage/DcmActivityUserTaskPropertiesPage.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

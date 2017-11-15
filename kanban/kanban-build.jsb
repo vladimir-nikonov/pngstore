@@ -22,6 +22,7 @@
     <include name="dev\KanbanElement.js" />
     <include name="dev\KanbanElementViewModel.js" />
     <include name="dev\KanbanSection.js" />
+    <include name="dev\DataQueryBus.js" />
   </target>
   <directory name="dev" />
   <file name="dev\CaseDataStorage.js" path="" />
@@ -34,4 +35,5 @@
   <file name="dev\KanbanElement.js" path="" />
   <file name="dev\KanbanElementViewModel.js" path="" />
   <file name="dev\KanbanSection.js" path="" />
+  <file name="dev\DataQueryBus.js" path="" />
 </project>

@@ -1,3 +1,7 @@
+.scroll-fake {
+
+}
+
 .dcm-stage-container.reorderable-container {
 	flex-basis: 100%;
 	min-height: 600px;

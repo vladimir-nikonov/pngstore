@@ -1737,69 +1737,73 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 Ext.define("Terrasoft.extensions.BatchableEntitySchemaQuery", {
 	alternateClassName: "Terrasoft.BatchableEntitySchemaQuery",
 	override: "Terrasoft.EntitySchemaQuery",
-	useBatch: false
-});
-
-Ext.define("Terrasoft.extensions.DataQueryBus", {
-
-	alternateClassName: "Terrasoft.DataQueryBus",
-	
-	override: "Terrasoft.DataProvider",
-
-	_queryMap: {},
-
-	_queries: [],
-
-	_timerId: null,
-
-	_delay: 5,
-
-	_batchSize: 5,
-
-	_callback: null,
-
-	_scope: null,
-
-	_useBatch: Terrasoft.Features.getIsEnabled("UseDataQueryBus"),
-
-	executeQuery: function(query, callback, scope) {
-		if (query.operationType == 0 && (this._useBatch || query.useBatch)) {
-			query._callback = callback;
-			query._scope = scope;
-			this._queries.push(query);
-			clearTimeout(this._timerId);
-			if (this._queries.length == this._batchSize) {
-				this._execute();
-			} else {
-				this._timerId = Ext.defer(this._execute, this._delay, this);
-			}
+	useBatch: false,
+	skipResponseParsing: false,
+	parseGetEntityResponse: function(response, primaryColumnValue, callback, scope) {
+		if (response.collection) {
+			callback.call(scope || this, {
+				success: response.success,
+				entity: response.collection.get(primaryColumnValue)
+			});
+		} else if (response.entity) {
+			callback.call(scope || this, response);
 		} else {
 			this.callParent(arguments);
 		}
 	},
-
-	_execute: function() {
-		var queries = this._queries;
-		if (queries.length > 0) {
-			var batchId = Terrasoft.generateGUID();
-			var batch = Ext.create("Terrasoft.BatchQuery");
-			var batchMap = this._queryMap[batchId] = [];
-			Terrasoft.each(queries, function(query) {
-				batchMap.push(query);
-				batch.add(query);
-			});
-			this._queries = [];
-			var responseFunction = function(response) {
-				var batchQueries = this._queryMap[batchId];
-				delete this._queryMap[batchId];
-				for(var i = 0; i < batchQueries.length; i++) {
-					var query = batchQueries[i];
-					var queryResponse = response.queryResults[i];
-					queryResponse.success = true;
-					query._callback.call(query._scope, queryResponse);
-				}
-			};
-			batch.execute(responseFunction, this);
+	parseResponse: function(response, callback, scope) {
+		if (response.collection) {
+			callback.call(scope || this, response);
+		} else {
+			this.callParent(arguments);
 		}
+	}
+});
+
+Ext.define("Terrasoft.extensions.DataQueryBus", {
+	alternateClassName: "Terrasoft.DataQueryBus",
+	override: "Terrasoft.DataProvider",
+	_queries: [],
+	_delay: 100,
+	_batchSize: 10,
+	_useBatch: Terrasoft.Features.getIsEnabled("UseDataQueryBus"),
+	_esqCount: 0,
+	_bqCount: 0,
+	_printStatistic: true,
+	_isBatchable: function(query) {
+		return (query.operationType == 0 && (this._useBatch || query.useBatch));
+	},
+	executeQuery: function(query, callback, scope) {
+		if (this._isBatchable(query)) {
+			this._queries.push([query, callback, scope]);
+			this._esqCount++;
+			Terrasoft.debounce(
+				this._execute.bind(this),
+				this._delay,
+				this._queries.length >= this._batchSize
+			)();
+		} else {
+			this.callParent(arguments);
+		}
+	},
+	_execute: function() {
+		var batchItem = this._queries.shift();
+		if (batchItem) {
+			var batch = Ext.create("Terrasoft.BatchQuery");
+			while (batchItem) {
+				batch.add.apply(batch, batchItem);
+				batchItem = this._queries.shift();
+			}
+			this._bqCount++;
+			batch.execute(Terrasoft.emptyFn, this);
+		}
+		if (this._printStatistic) {
+			console.clear();
+			console.log(this._getStatistic());
+		}
+	},
+	_getStatistic: function() {
+		var eco = Ext.Number.toFixed(100 - this._bqCount * 100 / this._esqCount, 1);
+		return Ext.String.format("ESQ:{0} | BQ:{1} | ECO:{2}%", this._esqCount, this._bqCount, eco);
 	}
 });
