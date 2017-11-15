@@ -1769,7 +1769,7 @@ Ext.define("Terrasoft.extensions.DataQueryBus", {
 	_useBatch: Terrasoft.Features.getIsEnabled("UseDataQueryBus"),
 	_esqCount: 0,
 	_bqCount: 0,
-	_printStatistic: true,
+	_printStatistic: false,
 	_isBatchable: function(query) {
 		return (query.operationType == 0 && (this._useBatch || query.useBatch));
 	},
