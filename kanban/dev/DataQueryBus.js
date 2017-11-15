@@ -20,6 +20,33 @@ Ext.define("Terrasoft.extensions.BatchableEntitySchemaQuery", {
 		} else {
 			this.callParent(arguments);
 		}
+	},
+	getEntity: function(primaryColumnValue, callback, scope) {
+		if (!primaryColumnValue) {
+			throw new Terrasoft.ArgumentNullOrEmptyException();
+		}
+		if (this.destroyed === true) {
+			return;
+		}
+		var cache = Terrasoft.EntitySchemaQuery.cache;
+		var cacheItemName = this.getClientCacheItemName(primaryColumnValue);
+		var viewModel = null;
+		if (cacheItemName && cache[cacheItemName]) {
+			var response = Terrasoft.deepClone(cache[cacheItemName]);
+			if (response.rowsAffected > 0) {
+				viewModel = this.getViewModelByQueryResult(response.rows[0], response.rowConfig);
+			}
+			callback.call(scope || this, {
+				success: response.success,
+				entity: viewModel
+			});
+			return;
+		}
+		this.enablePrimaryColumnFilter(primaryColumnValue);
+		Terrasoft.DataProvider.executeQuery(this, function(response) {
+			this.disablePrimaryColumnFilter();
+			this.parseGetEntityResponse(response, primaryColumnValue, callback, scope);
+		}, this);
 	}
 });
 
@@ -34,7 +61,7 @@ Ext.define("Terrasoft.extensions.DataQueryBus", {
 	_bqCount: 0,
 	_printStatistic: false,
 	_isBatchable: function(query) {
-		return (query.operationType == 0 && (this._useBatch || query.useBatch));
+		return (query.operationType === Terrasoft.QueryOperationType.SELECT && (this._useBatch || query.useBatch));
 	},
 	executeQuery: function(query, callback, scope) {
 		if (this._isBatchable(query)) {
