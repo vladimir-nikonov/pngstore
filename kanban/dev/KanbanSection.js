@@ -372,6 +372,12 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			},
 
 			_initializeKanbanBoard: function() {
+				if(Terrasoft.Features.getIsEnabled("UseMultiCase")) {
+					var storage = this.get("CaseDataStorage");
+					storage.clear();
+					this.kabanInitialized = false;
+					this.kanbanLoading = false;
+				}
 				this._loadKanbanProfile(this._initKanbanStorage);
 			},
 
