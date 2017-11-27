@@ -4,9 +4,11 @@ Ext.define("Terrasoft.extensions.BatchableEntitySchemaQuery", {
 	useBatch: false,
 	parseGetEntityResponse: function(response, primaryColumnValue, callback, scope) {
 		if (response.collection) {
+			var collection = response.collection;
+			var entity = collection.find(primaryColumnValue) || collection.first();
 			callback.call(scope || this, {
 				success: response.success,
-				entity: response.collection.get(primaryColumnValue)
+				entity: entity
 			});
 		} else if (response.entity) {
 			callback.call(scope || this, response);

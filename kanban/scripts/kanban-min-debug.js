@@ -1520,6 +1520,12 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			},
 
 			_initializeKanbanBoard: function() {
+				if(Terrasoft.Features.getIsEnabled("UseMultiCase")) {
+					var storage = this.get("CaseDataStorage");
+					storage.clear();
+					this.kabanInitialized = false;
+					this.kanbanLoading = false;
+				}
 				this._loadKanbanProfile(this._initKanbanStorage);
 			},
 
@@ -1740,9 +1746,11 @@ Ext.define("Terrasoft.extensions.BatchableEntitySchemaQuery", {
 	useBatch: false,
 	parseGetEntityResponse: function(response, primaryColumnValue, callback, scope) {
 		if (response.collection) {
+			var collection = response.collection;
+			var entity = collection.find(primaryColumnValue) || collection.first();
 			callback.call(scope || this, {
 				success: response.success,
-				entity: response.collection.get(primaryColumnValue)
+				entity: entity
 			});
 		} else if (response.entity) {
 			callback.call(scope || this, response);
