@@ -70,11 +70,6 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			setActiveView: function() {
 				this.callParent(arguments);
 				var hideSettings = !this._isKanban();
-				var state = this.getHistoryStateInfo();
-				var needClose = !(state && state.workAreaMode == 2);
-				if (hideSettings && needClose) {
-					this.closeCard();
-				}
 				this.set("IsSortMenuVisible", hideSettings);
 				this.set("IsSummarySettingsVisible", hideSettings);
 			},
