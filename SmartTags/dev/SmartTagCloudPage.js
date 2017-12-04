@@ -1,4 +1,4 @@
-define("SmartTagsCloudPage", ["SmartTagsD3LayoutCloud", "css!SmartTags"], function() {
+define("SmartTagsCloudPage", ["css!SmartTags", "SmartTagsD3LayoutCloud"], function() {
 	return {
 		methods: {
 
