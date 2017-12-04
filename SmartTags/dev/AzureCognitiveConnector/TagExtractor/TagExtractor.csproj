@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C067E414-637C-43AB-BF42-82C846A3D259}</ProjectGuid>
+    <ProjectGuid>{35CE8538-05C2-4838-B8BB-A15D72B96ADD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TagExtractor</RootNamespace>
@@ -50,7 +50,6 @@
     <Compile Include="IKeyPhrasesExtractor.cs" />
     <Compile Include="ILangExtractor.cs" />
     <Compile Include="TagExtractor.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
