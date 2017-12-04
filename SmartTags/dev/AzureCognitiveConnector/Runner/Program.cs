@@ -14,9 +14,12 @@ namespace Runner
 
 		static void Main(string[] args) {
 			var tExtractor = new TagExtractorExecuter(_defaultUrl, _defaultApiKey);
+			tExtractor.GetTags(new Guid(), @"The entire Pro Git book, written by Scott Chacon and Ben Straub and published by Apress, is available here.
+				All content is licensed under the Creative Commons Attribution Non Commercial Share Alike 3.0 license. 
+				Print versions of the book are available on Amazon.com.").ForEach(Console.WriteLine);
 			try {
 				var	tags = tExtractor.GetTags(new Guid(), @"Что то на русском");
-				tags.ForEach(tag => Console.WriteLine(tag));
+				tags.ForEach(Console.WriteLine);
 			} catch (UnsupportedLangException exception) {
 				Console.WriteLine(exception.Message);
 			} catch (Exception ex) {

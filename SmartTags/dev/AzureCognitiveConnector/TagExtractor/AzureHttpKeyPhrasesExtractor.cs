@@ -92,7 +92,7 @@ namespace TagExtractor
 					var json = await response.Content.ReadAsStringAsync();
 					var documents = JObject.Parse(json)["documents"];
 					if (documents.Any()) {
-						return documents[0]["keyPhrases"].Select(key => key.Value<string>()).ToList();
+						return documents[0]["keyPhrases"].Select(key => key.Value<string>().Trim()).ToList();
 					}
 					throw ProcessError(json);
 				}

@@ -44,7 +44,7 @@ namespace TagExtractor
 				if (response.IsSuccessStatusCode) {
 					var json = await response.Content.ReadAsStringAsync();
 					var documents = JObject.Parse(json)["documents"];
-					return documents[0]["detectedLanguages"][0]["iso6391Name"].Value<string>();
+					return documents[0]["detectedLanguages"][0]["iso6391Name"].Value<string>().Trim();
 				}
 				response.EnsureSuccessStatusCode();
 				return string.Empty;
