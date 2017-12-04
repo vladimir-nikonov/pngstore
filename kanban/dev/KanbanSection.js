@@ -192,7 +192,6 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				}
 			},
 
-
 			_addKanbanDataView: function(baseDataViews) {
 				if (!baseDataViews.Kanban) {
 					baseDataViews.Kanban = {
