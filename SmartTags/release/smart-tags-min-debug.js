@@ -404,7 +404,7 @@ define("SmartTagsD3LayoutCloud", ["d3js"], function () {
 		exports.cloud = cloud;
 	})(typeof exports === "undefined" ? d3.layout || (d3.layout = {}) : exports);
 });
-define("SmartTagsCloudPage", ["SmartTagsD3LayoutCloud"], function() {
+define("SmartTagsCloudPage", ["SmartTagsD3LayoutCloud", "css!SmartTags"], function() {
 	return {
 		methods: {
 
