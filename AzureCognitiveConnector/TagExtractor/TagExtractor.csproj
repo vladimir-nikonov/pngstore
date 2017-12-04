@@ -50,6 +50,7 @@
     <Compile Include="IKeyPhrasesExtractor.cs" />
     <Compile Include="ILangExtractor.cs" />
     <Compile Include="TagExtractor.cs" />
+    <Compile Include="UnsupportedLangException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
