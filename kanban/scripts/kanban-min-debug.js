@@ -1155,7 +1155,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				type: Terrasoft.ViewModelColumnType.VIRTUAL_COLUMN,
 				name: "Attribute",
 				caption: "Case",
-				onChange: "_initializeKanbanBoard"
+				onChange: "_changeCase"
 			},
 			"DcmCases": {
 				dataValueType: Terrasoft.DataValueType.COLLECTION
@@ -1180,17 +1180,11 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				}
 			},
 
-			_onBeforeKanbanElementSave: function() {
-				this.showBodyMask();
-			},
-
-			_onAfterKanbanElementSaved: function() {
-				this.hideBodyMask();
-			},
-
-			_subscribeCaseDataStorageEvents: function(caseDataStorage) {
-				caseDataStorage.on("beforeKanbanElementSave", this._onBeforeKanbanElementSave, this);
-				caseDataStorage.on("afterKanbanElementSaved", this._onAfterKanbanElementSaved, this);
+			_changeCase: function() {
+				this._loadKanbanStorage();
+				var selectedCase = this.get("DcmCase")
+				this.caseUId = selectedCase ? selectedCase.get("UId") : null;
+				this._saveProfile();
 			},
 
 			_loadLastStageFilterData: function() {
@@ -1216,40 +1210,32 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			init: function(callback, scope) {
 				this.callParent([function() {
 					this.set("DcmCases", this.Ext.create("Terrasoft.Collection"));
-					var caseDataStorage = this.Ext.create("Terrasoft.Kanban.CaseDataStorage");
-					this._subscribeCaseDataStorageEvents(caseDataStorage);
-					this.set("CaseDataStorage", caseDataStorage);
-					this._loadDcmCases(callback, scope);
+					this._initKanbanStorage();
+					this._loadKanbanProfile(callback, scope)
 				}, this]);
 			},
 
 			setActiveView: function() {
 				this.callParent(arguments);
 				var hideSettings = !this._isKanban();
-				var state = this.getHistoryStateInfo();
-				var needClose = !(state && state.workAreaMode == 2);
-				if (hideSettings && needClose) {
-					this.closeCard();
-				}
 				this.set("IsSortMenuVisible", hideSettings);
 				this.set("IsSummarySettingsVisible", hideSettings);
 			},
 
 			afterFiltersUpdated: function() {
+				this.filtersInitialized = true;
 				this.callParent(arguments);
-				if (this.kabanInitialized == true) {
-					this._setKanbanFilter();
-				} else {
-					this._initializeKanbanBoard();
-				}
+				this._setKanbanFilter();
 			},
 
 			_setKanbanFilter: function() {
-				if (this.kabanInitialized) {
+				if (!this.kanbanLoading && this.filtersInitialized) {
 					var storage = this.get("CaseDataStorage");
 					var filters = this.getSerializableFilter(this.getFilters());
 					var lastStageFilter = this.get("LastStageFilterData");
 					storage.setFilter(filters, lastStageFilter);
+				} else {
+					this._loadKanbanStorage();
 				}
 			},
 
@@ -1274,7 +1260,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				var columns = [];
 				if (profile && profile.tiledConfig) {
 					columns = this._decodeColumnsSetingsFromProfile(profile.tiledConfig);
-				} else if (profile[verticalPropertyName] && profile[verticalPropertyName].tiledConfig) {
+				} else if (profile && profile[verticalPropertyName] && profile[verticalPropertyName].tiledConfig) {
 					columns = this._decodeColumnsSetingsFromProfile(profile[verticalPropertyName].tiledConfig);
 				} else {
 					var entitySchema = this.entitySchema;
@@ -1302,14 +1288,13 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			_setDcmCases: function(result) {
 				var collection = result.collection;
 				var dcmCases = this.get("DcmCases");
+				dcmCases.clear();
 				collection.each(function(item) {
 					item.set("Click", {bindTo: "_setActiveCase"});
 					item.set("Tag", item.get("UId"));
 					dcmCases.add(item.get("UId"), item);
 				}, this);
-				//this.set("MultiCases", dcmCases.getCount() > 1);
-				//this.set("MultiCases", true);
-				var dcmSchema = dcmCases.first();
+				var dcmSchema = dcmCases.find(this.caseUId) || dcmCases.first();
 				this.set("DcmCase", dcmSchema);
 				if (dcmCases.getCount() > 0) {
 					var dataViews = this.get("DataViews");
@@ -1410,21 +1395,8 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 					keepAlive: true
 				});
 				this.sandbox.subscribe("GridSettingsChanged", function(args) {
-				this.set("Profile", args.newProfileData);
-				var storage = this.get("CaseDataStorage");
-				storage.clear();
-				var dcmSchema = this.get("DcmCase");
-				var dcmSchemaUId = dcmSchema.get("UId");
-				Terrasoft.DcmSchemaManager.getInstanceByUId(dcmSchemaUId, function(schema) {
-					storage.initialize({
-						dcmCaseSchema: schema,
-						entitySchema: this.entitySchema,
-						columnsConfig: this.columnsConfig,
-						elementColumnConfig: this._getKanbanColumns(),
-						lastStageFilters: this._getLastStageFilters()
-					});
-					storage.loadData();
-				}, this);
+					this.set("Profile", args.newProfileData);
+					this._loadKanbanStorage();
 				}, this, [gridSettingsId]);
 			},
 
@@ -1464,11 +1436,11 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				return schemaName + "GridSettings" + tabName;
 			},
 
-			_loadKanbanProfile: function(callback) {
+			_loadKanbanProfile: function(callback, scope) {
 				var kanbanKey = this._getKanbanProfileKey();
 				var verticalGridProfileKey = this._getVerticalProfileKey();
 				if (this.get("KanbanProfile")) {
-					callback.call(this);
+					callback.call(scope);
 				} else {
 					this.Terrasoft.require(["profile!" + kanbanKey, "profile!" + verticalGridProfileKey],
 						function(kanbanProfile, verticalProfile) {
@@ -1477,7 +1449,9 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 							this.set("KanbanProfile", profile);
 							var lastStageFilterId = kanbanProfile ? kanbanProfile.lastStageFilterId : null;
 							this.set("LastStageFilterId", lastStageFilterId);
-							callback.call(this);
+							this.caseUId = kanbanProfile ? kanbanProfile.caseUId : null;
+							this._loadDcmCases();
+							callback.call(scope);
 					}, this);
 				}
 			},
@@ -1492,18 +1466,25 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			},
 
 			_initKanbanStorage: function() {
+				var storage = this.Ext.create("Terrasoft.Kanban.CaseDataStorage");
+				storage.on("beforeKanbanElementSave", this.showBodyMask, this);
+				storage.on("afterKanbanElementSaved", this.hideBodyMask, this);
+				this.set("CaseDataStorage", storage);
+			},
+
+			_loadKanbanStorage: function() {
 				if (this.kanbanLoading === true) {
 					return;
 				} else {
 					this.kanbanLoading = true;
 				}
-				var dcmSchema = this.get("DcmCase");
+				var dcmSchema = this.get("DcmCase");	
 				if (dcmSchema) {
 					var dcmSchemaUId = dcmSchema.get("UId");
-					this.kabanInitialized = false;
 					Terrasoft.DcmElementSchemaManager.initialize(function() {
 						Terrasoft.DcmSchemaManager.getInstanceByUId(dcmSchemaUId, function(schema) {
 							var storage = this.get("CaseDataStorage");
+							storage.clear();
 							storage.initialize({
 								dcmCaseSchema: schema,
 								entitySchema: this.entitySchema,
@@ -1511,23 +1492,16 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 								elementColumnConfig: this._getKanbanColumns(),
 								lastStageFilters: this._getLastStageFilters()
 							});
-							this.kabanInitialized = true;
-							this.kanbanLoading === false;
-							this._setKanbanFilter();
+							this.kanbanLoading = false;
+							if (this.filtersInitialized) {
+								this._setKanbanFilter();
+							}
 						}, this);
 					}, this);
 				}
 			},
 
-			_initializeKanbanBoard: function() {
-				if(Terrasoft.Features.getIsEnabled("UseMultiCase")) {
-					var storage = this.get("CaseDataStorage");
-					storage.clear();
-					this.kabanInitialized = false;
-					this.kanbanLoading = false;
-				}
-				this._loadKanbanProfile(this._initKanbanStorage);
-			},
+			_timeoutId: null,
 
 			loadKanban: function() {
 				this.set("IsActionButtonsContainerVisible", true);
@@ -1654,9 +1628,11 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				var filterId = this.get("LastStageFilterId");
 				if (profile) {
 					profile.lastStageFilterId = filterId;
+					profile.caseUId = this.caseUId;
 				} else {
 					profile = {
-						lastStageFilterId: filterId
+						lastStageFilterId: filterId,
+						caseUId: this.caseUId
 					}
 				}
 				var profileKey = this._getKanbanProfileKey();
