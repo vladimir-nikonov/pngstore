@@ -149,12 +149,23 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				var dcmSchema = dcmCases.find(this.caseUId) || dcmCases.first();
 				this.set("DcmCase", dcmSchema);
 				if (dcmCases.getCount() > 0) {
-					var dataViews = this.get("DataViews");
-					this._lazyKanbanDataView(dataViews);
-					this.sandbox.publish("ChangeHeaderCaption", {
-						dataViews: this.get("DataViews")
-					});
+					this._updateMainHedareCaption();
 				}
+			},
+
+			_updateMainHedareCaption: function() {
+				var caption = this.getActiveViewCaption();
+				var dataViews = this.get("DataViews");
+				this._lazyKanbanDataView(dataViews);
+				var activeViewName = this.getActiveViewName();
+				var activeView = dataViews.get(activeViewName);
+				var markerValue = activeView.caption;
+				this.sandbox.publish("ChangeHeaderCaption", {
+					caption: caption || this.getDefaultGridDataViewCaption(),
+					markerValue: markerValue,
+					dataViews: dataViews,
+					moduleName: this.name
+				});
 			},
 
 			_setActiveCase: function(caseId) {
