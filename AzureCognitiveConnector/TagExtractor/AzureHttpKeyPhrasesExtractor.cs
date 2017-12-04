@@ -13,7 +13,7 @@ namespace TagExtractor
 		private const string UnsupportedLangMessage = "Supplied language is not supported";
 		private static string _operationName = "keyPhrases?";
 
-		public AzureHttpKeyPhrasesExtractor(string baseUrl, string apiKey) 
+		public AzureHttpKeyPhrasesExtractor(string baseUrl, string apiKey)
 			: base(baseUrl, apiKey, _operationName) {
 		}
 
@@ -45,16 +45,16 @@ namespace TagExtractor
 			};
 			var response = await PostAsync(map);
 			if (response.IsSuccessStatusCode) {
-					var json = await response.Content.ReadAsStringAsync();
-					var documents = JObject.Parse(json)["documents"];
-					if (documents.Any()) {
-						return documents[0]["keyPhrases"].Select(key => key.Value<string>().Trim()).ToList();
-					}
-					throw ProcessError(json);
+				var json = await response.Content.ReadAsStringAsync();
+				var documents = JObject.Parse(json)["documents"];
+				if (documents.Any()) {
+					return documents[0]["keyPhrases"].Select(key => key.Value<string>().Trim()).ToList();
 				}
-				response.EnsureSuccessStatusCode();
-				return null;
+				throw ProcessError(json);
 			}
+			response.EnsureSuccessStatusCode();
+			return null;
 		}
+	}
 
 }
