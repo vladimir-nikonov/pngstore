@@ -1,4 +1,4 @@
-define("SmartTagsSection", [], function() {
+define("SmartTagsSection", ["BaseSectionV2Resources"], function(resources) {
 	return {
 		methods: {
 
@@ -15,17 +15,11 @@ define("SmartTagsSection", [], function() {
 				});
 			},
 			
-			_usesAutoTag: function() {
-				//TODO: use lookup valuez
-				return true;
-			},
-			
 			getViewOptions: function() {
 				var viewOptions = this.callParent(arguments);
 				viewOptions.addItem(this.getButtonMenuSeparator());
 				viewOptions.addItem(this.getButtonMenuItem({
-					"Caption": "Show tag cloud",
-					"Visible": {"bindTo": "_usesAutoTag"},
+					"Caption": resources.localizableStrings.ShowTagCloud,
 					"Click": {"bindTo": "_showTagCloud"}
 				}));
 				return viewOptions;
