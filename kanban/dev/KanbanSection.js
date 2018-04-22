@@ -126,7 +126,8 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 					: this.getDataGridName("vertical");
 				var tiledConfig = (profile && profile.tiledConfig)
 					|| (profile && profile[propertyName] && profile[propertyName].tiledConfig);
-				columns = this._decodeColumnsSetingsFromProfile(tiledConfig);
+				var profileColumns = this._decodeColumnsSetingsFromProfile(tiledConfig);
+				Terrasoft.append(columns, profileColumns);
 				return columns.length > 0;
 			},
 
