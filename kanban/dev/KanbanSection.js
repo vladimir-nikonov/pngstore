@@ -34,7 +34,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 
 			_changeCase: function() {
 				this._loadKanbanStorage();
-				var selectedCase = this.get("DcmCase")
+				var selectedCase = this.get("DcmCase");
 				this.caseUId = selectedCase ? selectedCase.get("UId") : null;
 				this._saveProfile();
 			},
@@ -63,7 +63,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				this.callParent([function() {
 					this.set("DcmCases", this.Ext.create("Terrasoft.Collection"));
 					this._initKanbanStorage();
-					this._loadKanbanProfile(callback, scope)
+					this._loadKanbanProfile(callback, scope);
 				}, this]);
 			},
 
@@ -77,7 +77,9 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			afterFiltersUpdated: function() {
 				this.filtersInitialized = true;
 				this.callParent(arguments);
-				this._setKanbanFilter();
+				if (this._isKanban()) {
+					this._setKanbanFilter();
+				}
 			},
 
 			_setKanbanFilter: function() {
@@ -107,7 +109,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 
 			_getKanbanColumns: function() {
 				var columns = [];
-				if (!this._tryGetProfileColumns(columns)){
+				if (!this._tryGetProfileColumns(columns)) {
 					var entitySchema = this.entitySchema;
 					var primaryColumn = entitySchema.columns[entitySchema.primaryDisplayColumn.name];
 					columns.push({
@@ -214,7 +216,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 
 			getDefaultDataViews: function() {
 				var baseDataViews = this.callParent();
-				var activeViewName = this.getActiveViewNameFromProfile()
+				var activeViewName = this.getActiveViewNameFromProfile();
 				if (activeViewName == "Kanban") {
 					this._addKanbanDataView(baseDataViews);
 				}
@@ -222,7 +224,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			},
 
 			_isKanban: function() {
-				return this.get("ActiveViewName") === "Kanban"
+				return this.get("ActiveViewName") === "Kanban";
 			},
 
 			getKanbanDomAttributes: function() {
@@ -279,15 +281,15 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 					filtersGroup.logicalOperation = Terrasoft.LogicalOperatorType.AND;
 
 					var startFilter = Terrasoft.createColumnFilterWithParameter(Terrasoft.ComparisonType.GREATER_OR_EQUAL,
-							columnName, startDate,Terrasoft.DataValueType.DATE);
+							columnName, startDate, Terrasoft.DataValueType.DATE);
 					filtersGroup.addItem(startFilter);
 
 					var dueFilter = Terrasoft.createColumnFilterWithParameter(Terrasoft.ComparisonType.LESS_OR_EQUAL,
-							columnName, dueDate, Terrasoft.DataValueType.DATE)
+							columnName, dueDate, Terrasoft.DataValueType.DATE);
 					filtersGroup.addItem(dueFilter);
 
 					var serializationInfo = filtersGroup.getDefSerializationInfo();
-  					serializationInfo.serializeFilterManagerInfo = true;
+					serializationInfo.serializeFilterManagerInfo = true;
 					filters = filtersGroup.serialize(serializationInfo);
 				}
 				return filters;
@@ -319,7 +321,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 							this.caseUId = kanbanProfile ? kanbanProfile.caseUId : null;
 							this._loadDcmCases();
 							callback.call(scope);
-					}, this);
+						}, this);
 				}
 			},
 
@@ -345,7 +347,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				} else {
 					this.kanbanLoading = true;
 				}
-				var dcmSchema = this.get("DcmCase");	
+				var dcmSchema = this.get("DcmCase");
 				if (dcmSchema) {
 					var dcmSchemaUId = dcmSchema.get("UId");
 					Terrasoft.DcmElementSchemaManager.initialize(function() {
@@ -500,7 +502,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 					profile = {
 						lastStageFilterId: filterId,
 						caseUId: this.caseUId
-					}
+					};
 				}
 				var profileKey = this._getKanbanProfileKey();
 				this.Terrasoft.utils.saveUserProfile(profileKey, profile, false);
