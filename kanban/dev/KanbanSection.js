@@ -72,6 +72,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				var hideSettings = !this._isKanban();
 				this.set("IsSortMenuVisible", hideSettings);
 				this.set("IsSummarySettingsVisible", hideSettings);
+				this._loadKanbanStorage();
 			},
 
 			afterFiltersUpdated: function() {
@@ -342,6 +343,9 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			},
 
 			_loadKanbanStorage: function() {
+				if (!this._isKanban()) {
+					return;
+				}
 				if (this.kanbanLoading === true) {
 					return;
 				} else {
