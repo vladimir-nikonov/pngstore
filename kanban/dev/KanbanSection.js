@@ -217,10 +217,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 
 			getDefaultDataViews: function() {
 				var baseDataViews = this.callParent();
-				var activeViewName = this.getActiveViewNameFromProfile();
-				if (activeViewName == "Kanban") {
-					this._addKanbanDataView(baseDataViews);
-				}
+				this._addKanbanDataView(baseDataViews);
 				return baseDataViews;
 			},
 
