@@ -77,7 +77,7 @@
 		return {
 			className: "Terrasoft.KanbanColumn",
 			tag: id,
-			id: id,
+			id: Terrasoft.generateGUID(),
 			headerColor: {bindTo: "Color"},
 			headerColorWarpClassName: this.viewModel.get("ColumnClassName"),
 			classes: {
