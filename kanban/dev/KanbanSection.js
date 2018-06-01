@@ -95,7 +95,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			},
 
 			_decodeColumnsSetingsFromProfile: function(profile) {
-				var obj = Ext.decode(profile);
+				var obj = Ext.decode(profile, true);
 				var items = obj.items;
 				var columns = [];
 				Terrasoft.each(items, function(item) {
