@@ -1,6 +1,6 @@
 /*
- * dashbord designer
- * Copyright(c) 2017, atf
+ * Dashboard designer
+ * Copyright(c) 2018, atf
  */
 
 
