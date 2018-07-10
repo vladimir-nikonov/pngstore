@@ -257,6 +257,7 @@ function(resources, ddResources) {
 				result.DashboardGrid = ddResources.localizableStrings.AddDashboardGridButtonCaption;
 				result.Module = ddResources.localizableStrings.AddModuleButtonCaption;
 				result.WebPage = ddResources.localizableStrings.AddWebPageButtonCaption;
+				result.OpportunityFunnel = ddResources.localizableStrings.AddOpportunityFunnelButtonCaption;
 				return result[widgetType] || widgetType;
 			},
 			
