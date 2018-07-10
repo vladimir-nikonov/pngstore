@@ -1,7 +1,7 @@
 requirejs.config({
 	paths: {
-		atf_dashboarddesigner: "http://localhost/atf_dd/build/atf_dashboarddesigner-min",
-		atf_dashboarddesigner_overrides: "http://localhost/atf_dd/build/atf_dashboarddesigner_overrides-min"
+		atf_dashboarddesigner: "https://pngstore.azureedge.net/DashboardDesigner/src/build/atf_dashboarddesigner-min",
+		atf_dashboarddesigner_overrides: "https://pngstore.azureedge.net/DashboardDesigner/src/build/atf_dashboarddesigner_overrides-min"
 	},
 	waitSeconds: 300,
 	shim: {
