@@ -341,7 +341,7 @@ function(resources, ddResources) {
 					},
 					itemType: Terrasoft.ViewItemType.MODULE
 				};
-				var widgetConfig = widgetViewModel.get("widgetConfig");
+				var widgetConfig = Terrasoft.deepClone(widgetViewModel.get("widgetConfig"));
 				var widget = this.createWidgetGridLayoutEditItemViewModel(viewConfigItem, widgetConfig);
 				this.subscribeWidgetModuleConfigMessage(widget);
 				var items = this.get("Items");
