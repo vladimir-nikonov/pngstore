@@ -119,8 +119,7 @@ function(resources, ddResources) {
 			 */
 			getSectionId: function() {
 				var sectionInfo = this.getSectionInfo();
-				var dashboardSectionModule = Terrasoft.configuration.ModuleStructure.Dashboard.sectionModule;
-				return sectionInfo.sectionModule !== dashboardSectionModule && sectionInfo.moduleId;
+				return sectionInfo && sectionInfo.moduleId;
 			},
 
 			/**
