@@ -140,7 +140,8 @@ function(resources, ddResources) {
 
 			////TODO: Move to WidgetDesignerHelper
 			getWidgetImageConfig: function(widgetType) {
-				return this.get("Resources.Images." + widgetType + "WidgetImage");
+				return this.get("Resources.Images." + widgetType + "WidgetImage") ||
+					this.get("Resources.Images.ModuleWidgetImage");
 			},
 
 			/**
