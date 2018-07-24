@@ -172,3 +172,10 @@
 .tip-anchor {
 	display: block;
 }
+
+.grid-layout-edit-item-wrap .t-btn-image {
+    border: none;
+    margin: 2px;
+    height: 16px;
+    width: 16px;
+}
