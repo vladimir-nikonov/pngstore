@@ -10,7 +10,7 @@ requirejs.config({
 				"PreviewableGridLayoutEditItem", "DashboardDesigner"]
 		},
 		atf_dashboarddesigner_overrides: {
-			deps: ["PreviewableGridLayoutEditItem", "DashboardBuilder"]
+			deps: ["DashboardBuilder"]
 		}
 	}
 });
