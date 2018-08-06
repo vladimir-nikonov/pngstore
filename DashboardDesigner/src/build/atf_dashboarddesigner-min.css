@@ -173,6 +173,12 @@
 	display: block;
 }
 
+.grid-layout-edit-item-wrap .t-btn-image {
+    border: none;
+    height: 16px !important;
+    width: 16px !important;
+}
+
 #ATF_DashboardDesignerSchemaContainer .grid-layout-edit-item-actions-wrap .t-btn-image  {
 	border: none;
     height: 32px !important;

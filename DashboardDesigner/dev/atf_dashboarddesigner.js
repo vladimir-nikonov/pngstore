@@ -118,8 +118,12 @@ function(resources, ddResources) {
 			 * @param {String} Section id.
 			 */
 			getSectionId: function() {
-				var sectionInfo = this.getSectionInfo();
-				return sectionInfo && sectionInfo.moduleId;
+				const sectionInfo = this.getSectionInfo();
+				const section = sectionInfo && sectionInfo.moduleId;
+				if (section) {
+					this.$SectionId = { value: section };
+				}
+				return section;
 			},
 
 			/**
