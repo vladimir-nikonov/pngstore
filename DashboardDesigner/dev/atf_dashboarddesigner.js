@@ -491,7 +491,9 @@ function(resources, ddResources) {
 							var dashboardInfo = this.getDashboardInfo();
 							var dashboardId = dashboardInfo && dashboardInfo.dashboardId;
 							if (dashboardId) {
-								var dashboardItem = this.Terrasoft.DashboardManager.getItem(dashboardId);
+								var dashboardItem = dashboardInfo.copyItem
+									? Terrasoft.DashboardManager.copyItem(dashboardId)
+									: Terrasoft.DashboardManager.getItem(dashboardId);
 								next(dashboardItem);
 							} else {
 								this.createDashboard(next, this);
