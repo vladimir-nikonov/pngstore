@@ -421,7 +421,7 @@ function(resources, ddResources) {
 			},
 
 			onGetWidgetDesignerConfig: function() {
-				var result = {sectionId: this.get("SectionId")};
+				var result = {sectionId: this.getSectionId()};
 				var selectedItem = this.getSelectedItem();
 				if (selectedItem) {
 					var widgetConfig = selectedItem.get("widgetConfig");
