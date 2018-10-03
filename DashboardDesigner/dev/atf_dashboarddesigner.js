@@ -17,7 +17,26 @@ Ext.define("Terrasoft.AtfPreviewableGridLayoutEditItem", {
 				}
 			}
 		}
-	}
+	},
+	
+	onMoveDragOver: Terrasoft.GridLayoutEditItem.prototype.onMoveDragOver,
+
+	onResizeTopDragOver: Terrasoft.GridLayoutEditItem.prototype.onResizeTopDragOver,
+
+	onResizeTopRightDragOver: Terrasoft.GridLayoutEditItem.prototype.onResizeTopRightDragOver,
+
+	onResizeRightDragOver: Terrasoft.GridLayoutEditItem.prototype.onResizeRightDragOver,
+
+	onResizeBottomRightDragOver: Terrasoft.GridLayoutEditItem.prototype.onResizeBottomRightDragOver,
+
+	onResizeBottomDragOver: Terrasoft.GridLayoutEditItem.prototype.onResizeBottomDragOver,
+
+	onResizeBottomLeftDragOver: Terrasoft.GridLayoutEditItem.prototype.onResizeBottomLeftDragOver,
+
+	onResizeLeftDragOver: Terrasoft.GridLayoutEditItem.prototype.onResizeLeftDragOver,
+
+	onResizeTopLeftDragOver: Terrasoft.GridLayoutEditItem.prototype.onResizeTopLeftDragOver
+
 });
 
 define("atf_dashboarddesigner", ["ATF_DashboardDesignerSchemaResources", "DashboardDesignerResources", "css!atf_dashboarddesigner"],
