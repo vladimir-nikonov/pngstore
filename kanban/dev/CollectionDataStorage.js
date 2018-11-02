@@ -16,14 +16,18 @@ Ext.define("Terrasoft.Kanban.DataStorage", {
 
 	totalCount: null,
 
-	_loadItem: function(data) {
+	_loadItem: function(data, inTop) {
 		var primaryColumnName = this.collectionEntitySchema.primaryColumnName;
 		var key = data.get(primaryColumnName);
 		var existItem = this.find(key);
 		if (existItem) {
 			this.remove(existItem);
 		}
-		this.insert(0, key, data);
+		if (inTop) {
+			this.insert(0, key, data);
+		} else {
+			this.add(key, data);
+		}
 	},
 
 	_setTotalCount: function(count) {
@@ -44,7 +48,7 @@ Ext.define("Terrasoft.Kanban.DataStorage", {
 				for (var prop in this.itemConfig) {
 					entity.set(prop, this.itemConfig[prop]);
 				}
-				this._loadItem(entity);
+				this._loadItem(entity, true);
 			} else {
 				var existItem = this.find(recordId);
 				if (existItem) {

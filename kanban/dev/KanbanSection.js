@@ -72,15 +72,15 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				var hideSettings = !this._isKanban();
 				this.set("IsSortMenuVisible", hideSettings);
 				this.set("IsSummarySettingsVisible", hideSettings);
-				//this._loadKanbanStorage();
 			},
 
-			afterFiltersUpdated: function() {
+			onFilterUpdate: function() {
+				if (this.ignoreFilters()) {
+					return;
+				}
 				this.filtersInitialized = true;
 				this.callParent(arguments);
-				if (this._isKanban()) {
-					this._setKanbanFilter();
-				}
+				this._setKanbanFilter();
 			},
 
 			_setKanbanFilter: function() {
@@ -379,8 +379,12 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			},
 
 			loadMore: function() {
+				this.showBodyMask();
 				var storage = this.get("CaseDataStorage");
 				storage.loadData();
+				setTimeout(function() {
+					this.hideBodyMask();
+				}.bind(this), 1000);
 			},
 
 			onDragOver: function() {},
@@ -577,8 +581,36 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 					"onStageDblClick": {"bindTo": "onStageDblClick"},
 					"onStageSelected": {"bindTo": "onItemSelected"},
 					"elementDragDrop": {"bindTo": "onItemSelected"},
-					"loadMore": {"bindTo": "loadMore"},
+					//"loadMore": {"bindTo": "loadMore"},
 					"moveElement": {"bindTo": "moveKanbanElement"}
+				}
+			},
+			{
+				"operation": "insert",
+				"name": "LoadMoreContainer",
+				"propertyName": "items",
+				"values": {
+					"id": "LoadMoreContainer",
+					"itemType": Terrasoft.ViewItemType.CONTAINER,
+					"items": [],
+					"wrapClass": ["load-more-container"],
+					"visible": "$_isKanban"
+				}
+			},			
+			{
+				"operation": "insert",
+				"parentName": "LoadMoreContainer",
+				"propertyName": "items",
+				"name": "LoadMore",
+				"values": {
+					"itemType": Terrasoft.ViewItemType.BUTTON,
+					"style": this.Terrasoft.controls.ButtonEnums.style.TRANSPARENT,
+					"caption": "Load more data...",
+					"imageConfig": {
+						"source": Terrasoft.ImageSources.URL,
+						"url": "https://cdn4.iconfinder.com/data/icons/universal-7/614/5_-_Refresh-16.png"
+					},
+					"click": "$loadMore"					
 				}
 			}
 		]/**SCHEMA_DIFF*/
