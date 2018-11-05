@@ -201,6 +201,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			},
 
 			_addKanbanDataView: function(baseDataViews) {
+				return;
 				if (!baseDataViews.Kanban) {
 					baseDataViews.Kanban = {
 						index: 1,
@@ -581,7 +582,6 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 					"onStageDblClick": {"bindTo": "onStageDblClick"},
 					"onStageSelected": {"bindTo": "onItemSelected"},
 					"elementDragDrop": {"bindTo": "onItemSelected"},
-					//"loadMore": {"bindTo": "loadMore"},
 					"moveElement": {"bindTo": "moveKanbanElement"}
 				}
 			},
