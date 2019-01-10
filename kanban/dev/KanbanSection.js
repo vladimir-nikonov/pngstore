@@ -60,6 +60,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			},
 
 			init: function(callback, scope) {
+				this._enableLoadKanbanDataOptimization = this.getIsFeatureEnabled("LazyKanbanDataOptimization");
 				this.callParent([function() {
 					this.set("DcmCases", this.Ext.create("Terrasoft.Collection"));
 					this._initKanbanStorage();
@@ -69,9 +70,12 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 
 			setActiveView: function() {
 				this.callParent(arguments);
-				var hideSettings = !this._isKanban();
-				this.set("IsSortMenuVisible", hideSettings);
-				this.set("IsSummarySettingsVisible", hideSettings);
+				var isKanban = this._isKanban();
+				this.set("IsSortMenuVisible", !isKanban);
+				this.set("IsSummarySettingsVisible", !isKanban);
+				if (isKanban && this._enableLoadKanbanDataOptimization) {
+					this._updateKanbanView();
+				}
 			},
 
 			onFilterUpdate: function() {
@@ -80,7 +84,20 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				}
 				this.filtersInitialized = true;
 				this.callParent(arguments);
-				this._setKanbanFilter();
+				if (this._enableLoadKanbanDataOptimization) {
+					this._needUpdateKanbanView = true;
+					this._updateKanbanView();
+				} else {
+					this._setKanbanFilter();
+				}
+			},
+
+			_updateKanbanView: function() {
+				var isKanban = this._isKanban();
+				if (isKanban && this._needUpdateKanbanView) {
+					this._setKanbanFilter();
+					this._needUpdateKanbanView = false;
+				}
 			},
 
 			_setKanbanFilter: function() {
@@ -121,7 +138,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				}
 				return columns;
 			},
-			
+
 			_tryGetProfileColumns: function(columns) {
 				var profile = this.get("KanbanProfile");
 				var propertyName = profile && profile.KanbanColumnSettings
@@ -596,7 +613,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 					"wrapClass": ["load-more-container"],
 					"visible": "$_isKanban"
 				}
-			},			
+			},
 			{
 				"operation": "insert",
 				"parentName": "LoadMoreContainer",
@@ -610,7 +627,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 						"source": Terrasoft.ImageSources.URL,
 						"url": "https://cdn4.iconfinder.com/data/icons/universal-7/614/5_-_Refresh-16.png"
 					},
-					"click": "$loadMore"					
+					"click": "$loadMore"
 				}
 			}
 		]/**SCHEMA_DIFF*/
