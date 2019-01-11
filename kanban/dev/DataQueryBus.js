@@ -1,6 +1,6 @@
 Ext.define("Terrasoft.extensions.BatchableEntitySchemaQuery", {
 	alternateClassName: "Terrasoft.BatchableEntitySchemaQuery",
-	override: "Terrasoft.EntitySchemaQuery",
+	extend: "Terrasoft.EntitySchemaQuery",
 	useBatch: false,
 	parseGetEntityResponse: function(response, primaryColumnValue, callback, scope) {
 		if (response.collection) {
