@@ -1840,7 +1840,7 @@ Ext.define("Terrasoft.extensions.BatchableEntitySchemaQuery", {
 
 Ext.define("Terrasoft.extensions.DataQueryBus", {
 	alternateClassName: "Terrasoft.DataQueryBus",
-	override: "Terrasoft.DataProvider",
+	extend: "Terrasoft.DataProvider",
 	_queries: [],
 	_delay: 100,
 	_batchSize: 10,
