@@ -1,4 +1,4 @@
-define("DevViewModule", ["BaseViewModule", "FWSchemaBuilderV2"], function() {
+define("DevViewModule", ["core-base", "BaseViewModule", "FWSchemaBuilderV2"], function(core) {
 	
 	core.loadModule("ClientFileWather");
 
