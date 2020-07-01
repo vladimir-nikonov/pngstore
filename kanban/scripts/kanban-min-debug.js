@@ -1,6 +1,6 @@
 /*
  * Kanban
- * Copyright(c) 2017, bpm'online labs
+ * Copyright(c) 2017, A.T.F
  */
 
 Ext.define("Terrasoft.Kanban.CaseDataStorage", {
@@ -1508,16 +1508,13 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			},
 
 			_loadKanbanStorage: function() {
-				//if (!this._isKanban()) {
-					//return;
-				//}
-				if (this.kanbanLoading === true) {
-					return;
-				} else {
-					this.kanbanLoading = true;
-				}
 				var dcmSchema = this.get("DcmCase");
 				if (dcmSchema) {
+					if (this.kanbanLoading === true) {
+						return;
+					} else {
+						this.kanbanLoading = true;
+					}
 					var dcmSchemaUId = dcmSchema.get("UId");
 					Terrasoft.DcmElementSchemaManager.initialize(function() {
 						Terrasoft.DcmSchemaManager.getInstanceByUId(dcmSchemaUId, function(schema) {

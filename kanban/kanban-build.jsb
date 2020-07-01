@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<project path="" name="Kanban" author="bpm'online labs" version="1.0.1" copyright="$projectName&#xD;&#xA;Copyright(c) 2017, $author" output="\script" source="False" source-dir="scripts" minify="true" min-dir="$output\build" doc="False" doc-dir="$output\docs" master="true" master-file="$output\yui-ext.js" zip="true" zip-file="$output\yuo-ext.$version.zip">
+<project path="" name="Kanban" author="A.T.F" version="2.0.2" copyright="$projectName&#xD;&#xA;Copyright(c) 2017, $author" output="\script" source="False" source-dir="scripts" minify="true" min-dir="$output\build" doc="False" doc-dir="$output\docs" master="true" master-file="$output\yui-ext.js" zip="true" zip-file="$output\yuo-ext.$version.zip">
   <directory name="src" />
   <file name="src\CaseDataStorage.js" path="" />
   <file name="src\CollectionDataStorage.js" path="" />
