@@ -323,7 +323,7 @@ Ext.define("Terrasoft.Kanban.DataStorage", {
 			}
 		}, this);
 	},
-	
+
 	_activeToken: null,
 
 	loadData: function(callback, scope) {
@@ -674,7 +674,7 @@ Ext.define("Terrasoft.controls.KanbanColumn", {
 		this.isSuccessfull = value;
 	},
 
-	
+
 	defaultRenderTpl: [
 		"<div id=\"{id}\" style=\"{wrapStyles}\" class=\"{wrapClassName}\" isSuccessfull=\"{isSuccessfull}\">",
 		"<div id=\"{id}-header\" style=\"{headerStyles}\" class=\"{headerClassName}\">",
@@ -698,7 +698,7 @@ Ext.define("Terrasoft.controls.KanbanColumn", {
 		"</div>"
 	],
 
-	
+
 	getTplData: function() {
 		var tplData = this.callParent(arguments);
 		tplData.isSuccessfull = this.isSuccessfull;
@@ -777,7 +777,7 @@ Ext.define("Terrasoft.controls.KanbanColumnViewConfigBuilder", {
 		return this.viewModel.get("Id");
 	},
 
-	
+
 	getRecordsCountConfig: function() {
 		return {
 			className: "Terrasoft.Label",
@@ -937,7 +937,7 @@ Ext.define("Terrasoft.controls.KanbanElement", {
 
 	columnsConfig: null,
 
-	
+
 	_updateWrapSelector: function(id) {
 		if (!this.selectors) {
 			this.selectors = {};
@@ -1212,6 +1212,11 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			init: function(callback, scope) {
 				this._enableLoadKanbanDataOptimization = this.getIsFeatureEnabled("LazyKanbanDataOptimization");
 				this.callParent([function() {
+					const isKanban = this._isKanban();
+					if (isKanban === false) {
+						Ext.callback(callback, scope);
+						return;
+					}
 					this.set("DcmCases", this.Ext.create("Terrasoft.Collection"));
 					this._initKanbanStorage();
 					this._loadKanbanProfile(callback, scope);
