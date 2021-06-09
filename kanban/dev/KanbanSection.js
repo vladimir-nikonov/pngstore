@@ -62,11 +62,6 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			init: function(callback, scope) {
 				this._enableLoadKanbanDataOptimization = this.getIsFeatureEnabled("LazyKanbanDataOptimization");
 				this.callParent([function() {
-					const isKanban = this._isKanban();
-					if (isKanban === false) {
-						Ext.callback(callback, scope);
-						return;
-					}
 					this.set("DcmCases", this.Ext.create("Terrasoft.Collection"));
 					this._initKanbanStorage();
 					this._loadKanbanProfile(callback, scope);
