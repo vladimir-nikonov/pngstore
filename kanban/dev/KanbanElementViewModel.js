@@ -55,7 +55,8 @@ Ext.define("Terrasoft.controls.KanbanElementViewModel", {
 		return result;
 	},
 
-	getImageConfig: function() {
+
+	getOwnerImageConfig() {
 		var primaryImageColumnValue = this.get("Owner");
 		if (!primaryImageColumnValue || !primaryImageColumnValue.primaryImageValue) {
 			return null;
@@ -66,6 +67,30 @@ Ext.define("Terrasoft.controls.KanbanElementViewModel", {
 				primaryColumnValue: primaryImageColumnValue.primaryImageValue
 			}
 		};
+		return imageConfig;
+	},
+
+	getPrimaryImageConfig() {
+		var primaryImageColumnName = this.entitySchema.primaryImageColumnName;
+        if (!primaryImageColumnName || !this.get(primaryImageColumnName)) {
+            return null;
+        }
+		var imageColumnValue = this.get(primaryImageColumnName);
+		var imageValue =  imageColumnValue && imageColumnValue.value;
+		if (!imageValue) {
+			return null;
+		}
+        var imageConfig = {
+            source: Terrasoft.ImageSources.SYS_IMAGE,
+            params: {
+                primaryColumnValue: imageValue
+            }
+        };
+        return imageConfig;
+	},
+
+	getImageConfig: function() {
+		var imageConfig = this.getPrimaryImageConfig() || this.getOwnerImageConfig();
 		return imageConfig;
 	},
 
