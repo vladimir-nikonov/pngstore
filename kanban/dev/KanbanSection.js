@@ -172,7 +172,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				}, this);
 				var dcmSchema = dcmCases.find(this.caseUId) || dcmCases.first();
 				this.set("DcmCase", dcmSchema);
-				if (dcmCases.getCount() > 0) {
+				if (dcmCases.getCount() > 0 || this.enableKanbanForActivitySection()) {
 					this._updateMainHedareCaption();
 				}
 			},
@@ -217,18 +217,18 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			},
 
 			_addKanbanDataView: function(baseDataViews) {
-				return;
-				if (!baseDataViews.Kanban) {
-					baseDataViews.Kanban = {
-						index: 1,
-						name: "Kanban",
-						caption: baseDataViews.GridDataView.caption,
-						hint: this.get("Resources.Strings.KanbanHint"),
-						icon: this.get("Resources.Images.KanbanViewIcon"),
-						visible: this.get("ShowKanban")
-					};
-					baseDataViews.GridDataView.index = 1;
-					baseDataViews.AnalyticsDataView.index = 3;
+				if (this.enableKanbanForActivitySection()) {
+					if (!baseDataViews.Kanban) {
+						baseDataViews.Kanban = {
+							index: 1,
+							name: "Kanban",
+							caption: baseDataViews.GridDataView.caption,
+							hint: this.get("Resources.Strings.KanbanHint"),
+							icon: this.get("Resources.Images.KanbanViewIcon")
+						};
+						baseDataViews.GridDataView.index = 1;
+						baseDataViews.AnalyticsDataView.index = 3;
+					}
 				}
 			},
 
@@ -320,7 +320,15 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				return schemaName + "GridSettings" + tabName;
 			},
 
+			enableKanbanForActivitySection: function() {
+				return this.getIsFeatureEnabled("EnableKanbanForActivitySection") 
+							&& this.entitySchemaName == "Activity"
+			},
+
 			_loadKanbanProfile: function(callback, scope) {
+				if (this.enableKanbanForActivitySection()) {
+					callback.call(scope);
+				}
 				var kanbanKey = this._getKanbanProfileKey();
 				var verticalGridProfileKey = this._getVerticalProfileKey();
 				if (this.get("KanbanProfile")) {
@@ -333,8 +341,12 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 							this.set("KanbanProfile", profile);
 							var lastStageFilterId = kanbanProfile ? kanbanProfile.lastStageFilterId : null;
 							this.set("LastStageFilterId", lastStageFilterId);
-							this.caseUId = kanbanProfile ? kanbanProfile.caseUId : null;
-							this._loadDcmCases();
+							if (this.enableKanbanForActivitySection()) {
+								this._loadActivityKanbanStorage();
+							} else {
+								this.caseUId = kanbanProfile ? kanbanProfile.caseUId : null;
+								this._loadDcmCases();
+							}
 							callback.call(scope);
 						}, this);
 				}
@@ -350,13 +362,43 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			},
 
 			_initKanbanStorage: function() {
-				var storage = this.Ext.create("Terrasoft.Kanban.CaseDataStorage");
+				var storage = this.enableKanbanForActivitySection() ?
+					this.Ext.create("Terrasoft.ActivityDataStorage")
+					: this.Ext.create("Terrasoft.CaseDataStorage");
 				storage.on("beforeKanbanElementSave", this.showBodyMask, this);
 				storage.on("afterKanbanElementSaved", this.hideBodyMask, this);
 				this.set("CaseDataStorage", storage);
 			},
 
 			_loadKanbanStorage: function() {
+				if (this.enableKanbanForActivitySection()) {
+					this._loadActivityKanbanStorage();
+				} else {
+					this._loadCaseKanbanStorage();
+				}
+			},
+
+			_loadActivityKanbanStorage: function() {
+				if (this.kanbanLoading === true) {
+					return;
+				} else {
+					this.kanbanLoading = true;
+				}
+				var storage = this.get("CaseDataStorage");
+				storage.clear();
+				storage.initialize({
+					entitySchema: this.entitySchema,
+					columnsConfig: this.columnsConfig,
+					elementColumnConfig: this._getKanbanColumns(),
+					lastStageFilters: this._getLastStageFilters()
+				});
+				this.kanbanLoading = false;
+				if (this.filtersInitialized) {
+					this._setKanbanFilter();
+				}
+			},
+
+			_loadCaseKanbanStorage: function() {
 				var dcmSchema = this.get("DcmCase");
 				if (dcmSchema) {
 					if (this.kanbanLoading === true) {
