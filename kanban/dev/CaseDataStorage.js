@@ -479,10 +479,9 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 	_createDcmFilters: function(stageColumnName, stageId) {
 		var filters = Terrasoft.createFilterGroup();
 		filters.logicalOperation = Terrasoft.LogicalOperatorType.AND;
-		// if (this.filters) {
-		// 	var sectionFilters = this.filters;
-		// 	filters.addItem(sectionFilters);
-		// }
+		if (this.filters) {
+			filters.addItem(this.filters);
+		}
 		var isLast = stageId == this.lastStageId;
 		if (isLast && this.lastStageFilters) {
 			var lastStageFilter = Terrasoft.deserialize(this.lastStageFilters);

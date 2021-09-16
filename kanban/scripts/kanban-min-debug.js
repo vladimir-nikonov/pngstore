@@ -484,10 +484,9 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 	_createDcmFilters: function(stageColumnName, stageId) {
 		var filters = Terrasoft.createFilterGroup();
 		filters.logicalOperation = Terrasoft.LogicalOperatorType.AND;
-		// if (this.filters) {
-		// 	var sectionFilters = this.filters;
-		// 	filters.addItem(sectionFilters);
-		// }
+		if (this.filters) {
+			filters.addItem(this.filters);
+		}
 		var isLast = stageId == this.lastStageId;
 		if (isLast && this.lastStageFilters) {
 			var lastStageFilter = Terrasoft.deserialize(this.lastStageFilters);
@@ -1529,9 +1528,14 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			_setKanbanFilter: function() {
 				if (!this.kanbanLoading && this.filtersInitialized) {
 					var storage = this.get("CaseDataStorage");
-					var filters = this.getSerializableFilter(this.getFilters());
+					var filters = this.getFilters();
 					var lastStageFilter = this.get("LastStageFilterData");
-					storage.setFilter(filters, lastStageFilter);
+					if (this.entitySchemaName == "Activity") {
+						storage.setFilter(filters, lastStageFilter);
+					} else {
+						filters = this.getSerializableFilter(this.getFilters());
+						storage.setFilter(filters, lastStageFilter);
+					}
 				} else {
 					this._loadKanbanStorage();
 				}
@@ -1914,8 +1918,24 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				this.setSelectedItem(id);
 			},
 
+
+			openEditMiniPage: function(id) {
+				var config = {
+					isFixed: true,
+					showDelay: 0,
+					columnName: this.primaryDisplayColumnName,
+					entitySchemaName: this.entitySchemaName,
+					recordId: id
+				};
+				this.openMiniPage(config);
+			},
+
 			onElementDblClick: function(elementId) {
-				this.editRecord(elementId);
+				if (this.getIsFeatureEnabled("EnableKanbanForActivitySection")) {
+					this.openEditMiniPage(elementId);
+				} else {
+					this.editRecord(elementId);
+				}
 			},
 
 			onStageDblClick: function() {},
