@@ -6,7 +6,7 @@ Ext.define("Terrasoft.controls.KanbanElement", {
 		'<div id="{id}" class="kanban-element-wrap">',
 			'<div id="{id}-kanban-element-top" class="kanban-element-top">{caption}</div>',
 			'<div id="{id}-kanban-element-bottom" class="kanban-element-bottom">',
-				'<div id="{id}-kanban-element-image-container" class="kanban-element-image-container">',
+				'<div id="{id}-kanban-element-image-container" class="kanban-element-image-container" style=\"{imageContainerStyle}\">',
 					'<div id="{id}-kanban-element-image" class="kanban-element-image" style=\"{imageStyle}\"></div>',
 				'</div>',
 				'<div id="{id}-kanban-element-additional-columns" class="kanban-element-additional-columns">',
@@ -38,13 +38,24 @@ Ext.define("Terrasoft.controls.KanbanElement", {
 		var tplData = this.callParent(arguments);
 		tplData.id = id;
 		this._updateWrapSelector(id);
+		tplData.imageContainerStyle = this.imageContainerStyle;
 		return tplData;
 	},
 
 	init: function () {
 		this.callParent(arguments);
+		if (Kanban && Kanban.HideImage) {
+			this.imageContainerStyle = "display: none";
+		}
 		this.addEvents("elementGrabbed");
 		this.addEvents("elementReleased");
+	},
+
+	setImage: function(imageConfig) {
+		// if (Kanban && Kanban.HideImage) {
+		// 	this.imageContainerStyle = imageConfig ? "" : "display: none";
+		// }
+		this.callParent(arguments);
 	},
 
 	onDragEnter: function () {
@@ -91,6 +102,8 @@ Ext.define("Terrasoft.controls.KanbanElement", {
 			}
 		});
 	},
+
+	imageContainerStyle: null,
 
 	setDropZoneHintVisible: function(value) {
 		var dropZoneInstances = this.getDropZoneInstances();

@@ -63,6 +63,9 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				this._enableLoadKanbanDataOptimization = this.getIsFeatureEnabled("LazyKanbanDataOptimization");
 				this.callParent([function() {
 					this.set("DcmCases", this.Ext.create("Terrasoft.Collection"));
+					Kanban = {
+						HideImage: this.getIsFeatureEnabled("EnableKanbanForActivitySection")
+					};
 					this._initKanbanStorage();
 					this._loadKanbanProfile(callback, scope);
 				}, this]);
@@ -327,7 +330,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 
 			enableKanbanForActivitySection: function() {
 				return this.getIsFeatureEnabled("EnableKanbanForActivitySection") 
-							&& this.entitySchemaName == "Activity"
+							&& this.entitySchemaName == "Activity";
 			},
 
 			_loadKanbanProfile: function(callback, scope) {

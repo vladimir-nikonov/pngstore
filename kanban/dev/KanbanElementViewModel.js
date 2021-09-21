@@ -31,9 +31,32 @@ Ext.define("Terrasoft.controls.KanbanElementViewModel", {
 						bindTo: columnConfig.path,
 						bindConfig: {
 							converter: function() {
-								return Terrasoft.isNumberDataValueType(columnConfig.dataValueType)
+								var formattedValue =Terrasoft.isNumberDataValueType(columnConfig.dataValueType)
 									? Terrasoft.getFormattedNumberValue(this.get(columnConfig.path))
 									: this.get(columnConfig.path);
+								if (Ext.isDate(formattedValue)) {
+									var type = null;
+									for (var columnName in this.columns) {
+										var column = this.columns[columnName];
+										if (columnConfig.path == column.columnPath) {
+											type = column.dataValueType;
+											break;
+										}
+									}
+									switch (type) {
+										case Terrasoft.DataValueType.DATE:
+											formattedValue =  Ext.Date.format(formattedValue, Terrasoft.Resources.CultureSettings.dateFormat);
+											break;
+										case Terrasoft.DataValueType.TIME:
+											formattedValue = Ext.Date.format(formattedValue, Terrasoft.Resources.CultureSettings.timeFormat);
+											break;
+										case Terrasoft.DataValueType.DATE_TIME:
+											formattedValue= Ext.Date.format(formattedValue, Terrasoft.Resources.CultureSettings.dateFormat + " " +
+												Terrasoft.Resources.CultureSettings.timeFormat);
+												break;
+									}
+								}
+								return formattedValue;
 							}
 						}
 					}
