@@ -64,7 +64,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				this.callParent([function() {
 					this.set("DcmCases", this.Ext.create("Terrasoft.Collection"));
 					Kanban = {
-						HideImage: this.getIsFeatureEnabled("EnableKanbanForActivitySection") && false
+						HideImage: this.getIsFeatureEnabled("EnableKanbanForActivitySection")
 					};
 					this._initKanbanStorage();
 					this._loadKanbanProfile(callback, scope);
@@ -329,7 +329,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			},
 
 			enableKanbanForActivitySection: function() {
-				return this.getIsFeatureEnabled("EnableKanbanForActivitySection") && false
+				return this.getIsFeatureEnabled("EnableKanbanForActivitySection") 
 							&& this.entitySchemaName == "Activity";
 			},
 
@@ -509,7 +509,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 			},
 
 			onElementDblClick: function(elementId) {
-				if (this.getIsFeatureEnabled("EnableKanbanForActivitySection") && false && this.hasMiniPage(this.entitySchemaName)) {
+				if (this.getIsFeatureEnabled("EnableKanbanForActivitySection") && this.hasMiniPage(this.entitySchemaName)) {
 					this.openEditMiniPage(elementId);
 				} else {
 					this.editRecord(elementId);
