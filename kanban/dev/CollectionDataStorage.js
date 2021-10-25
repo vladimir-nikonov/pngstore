@@ -99,18 +99,18 @@ Ext.define("Terrasoft.Kanban.DataStorage", {
 	},
 
 	insert: function() {
-		this._setTotalCount(this.totalCount + 1);
 		this.callParent(arguments);
+		this._setTotalCount(this.totalCount + 1);
 	},
 
 	removeByIndex: function() {
-		this._setTotalCount(this.totalCount - 1);
 		this.callParent(arguments);
+		this._setTotalCount(this.totalCount - 1);
 	},
 
 	clear: function() {
-		this._reset();
 		this.callParent(arguments);
+		this._reset();
 	},
 
 	reloadData: function() {

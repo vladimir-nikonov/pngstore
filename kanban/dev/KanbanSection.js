@@ -1,4 +1,4 @@
-define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUtilities, ConfigurationEnums) {
+define("KanbanSection", ["PageUtilities", "ConfigurationEnums", "GridUtilities"], function(PageUtilities, ConfigurationEnums, GridUtilities) {
 	return {
 		//
 		attributes: {
@@ -375,6 +375,13 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 					: this.Ext.create("Terrasoft.CaseDataStorage");
 				storage.on("beforeKanbanElementSave", this.showBodyMask, this);
 				storage.on("afterKanbanElementSaved", this.hideBodyMask, this);
+				storage.on("errorSaveEntity", function(response) {
+					var message = response.errorInfo?.message;
+					this.showInformationDialog(message);
+				}, this)
+				storage.on("checkAllDataLoaded", function(result) {
+					this.set("LoadMoreButtonVisible", result.allDataLoaded);
+				}, this);
 				this.set("CaseDataStorage", storage);
 			},
 
@@ -684,12 +691,13 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				"values": {
 					"itemType": Terrasoft.ViewItemType.BUTTON,
 					"style": this.Terrasoft.controls.ButtonEnums.style.TRANSPARENT,
-					"caption": "Load more data...",
+					"caption": GridUtilities.getLoadButtonConfig().caption,
 					"imageConfig": {
 						"source": Terrasoft.ImageSources.URL,
 						"url": "https://cdn4.iconfinder.com/data/icons/universal-7/614/5_-_Refresh-16.png"
 					},
-					"click": "$loadMore"
+					"click": "$loadMore",
+					"visible": "$LoadMoreButtonVisible"
 				}
 			}
 		]/**SCHEMA_DIFF*/

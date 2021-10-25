@@ -18,9 +18,18 @@ Ext.define("Terrasoft.controls.KanbanColumnViewModel", {
 	},
 
 	move: function(moveData) {
-		moveData.sourceCollection.removeByKey(moveData.itemId);
+		var movedId = moveData.itemId
 		var groups = this.getConnections();
 		moveData.item.set("GroupName", groups);
+		var movedFunction = function(response) {
+			if (!response.success) {
+				moveData.sourceCollection.loadEntity(movedId);
+				moveData.targetCollection.loadEntity(movedId);
+			}
+			moveData.targetCollection.un("afterKanbanElementMoved", movedFunction);
+		};
+		moveData.targetCollection.on("afterKanbanElementMoved", movedFunction, this);
+		moveData.sourceCollection.removeByKey(moveData.itemId);
 		moveData.targetCollection.insert(0, moveData.itemId, moveData.item);
 		return moveData.targetIndex;
 	},

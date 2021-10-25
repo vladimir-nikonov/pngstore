@@ -22,10 +22,23 @@ Ext.define("Terrasoft.CaseDataStorage", {
 
 	init: function() {
 		this.callParent(arguments);
-		this.addEvent("beforeKanbanElementSave", "afterKanbanElementSaved");
+		this.addEvent("beforeKanbanElementSave", "afterKanbanElementSaved", "afterKanbanElementMoved", "checkAllDataLoaded");
 	},
 
-	_getColumnsIds: function(elementColumnsConfig) {
+	checkAllDataLoaded: function() {
+		var allColumnsDataLoaded = false;
+		var callback = Terrasoft.emptyFn;
+		Terrasoft.each(this.getItems(), function(kanbanColumn) {
+			var totalRowsCount = kanbanColumn.get("RecordsCount");
+			var currentRowsCount = kanbanColumn.get("ViewModelItems").getCount();
+			if (totalRowsCount > currentRowsCount) {
+				allColumnsDataLoaded = true;
+			}
+		}, callback, this);
+		this.fireEvent("checkAllDataLoaded", {allDataLoaded: allColumnsDataLoaded});
+	},
+
+	getColumnsIds: function(elementColumnsConfig) {
 		return elementColumnsConfig.map(function(i) {
 			return i.path;
 		});
@@ -52,8 +65,8 @@ Ext.define("Terrasoft.CaseDataStorage", {
 		var schema = this.dcmCaseSchema = config.dcmCaseSchema;
 		var columns = this.elementColumnConfig = config.elementColumnConfig || [];
 		var visibility = false;
-		if (Terrasoft.contains(this._getColumnsIds(columns), "CreatedOn")) {
-			var index = this._getColumnsIds(columns).indexOf("CreatedOn");
+		if (Terrasoft.contains(this.getColumnsIds(columns), "CreatedOn")) {
+			var index = this.getColumnsIds(columns).indexOf("CreatedOn");
 			this.elementColumnConfig.splice(index, 1);
 			visibility = true;
 		}
@@ -63,10 +76,10 @@ Ext.define("Terrasoft.CaseDataStorage", {
 			orderPosition: -1,
 			visibility: visibility
 		});
-		var stageColumn = this._getStageColumn();
+		var stageColumn = this.getStageColumn();
 		visibility = false;
-		if (Terrasoft.contains(this._getColumnsIds(columns), stageColumn.columnPath)) {
-			var index = this._getColumnsIds(columns).indexOf(stageColumn.columnPath);
+		if (Terrasoft.contains(this.getColumnsIds(columns), stageColumn.columnPath)) {
+			var index = this.getColumnsIds(columns).indexOf(stageColumn.columnPath);
 			this.elementColumnConfig.splice(index, 1);
 			visibility = true;
 		}
@@ -74,15 +87,16 @@ Ext.define("Terrasoft.CaseDataStorage", {
 			path: stageColumn.columnPath,
 			visibility: visibility
 		});
-		this._initColumns(schema);
+		this.initColumns(schema);
 	},
 
 	loadEntity: function (recordId, callback, scope) {
 		callback = callback || Terrasoft.emptyFn;
-		Terrasoft.eachAsync(this.getItems(), function(kanbanColumn, next) {
+		Terrasoft.eachAsync(this.getItems(), function(kanbanColumn) {
 			var kanbanElements = kanbanColumn.get("ViewModelItems");
 			kanbanElements.loadEntity(recordId, next, this);
 		}, callback, scope);
+		this.checkAllDataLoaded();
 	},
 
 	loadData: function (config, callback, scope) {
@@ -90,32 +104,40 @@ Ext.define("Terrasoft.CaseDataStorage", {
 		Terrasoft.eachAsync(this.getItems(), function(kanbanColumn, next) {
 			var kanbanElements = kanbanColumn.get("ViewModelItems");
 			kanbanElements.loadData(next, this);
-		}, callback, scope);
+		}, function() {
+			this.checkAllDataLoaded();
+			Ext.callback(callback, scope);
+		}, this);
+		
 	},
 
-	_getStageColumn: function() {
+	getStageColumn: function() {
 		var stageColumnUId = this.dcmCaseSchema.stageColumnUId;
 		return this.entitySchema.findColumnByUId(stageColumnUId);
 	},
 
-	_getFilters: function(stageId) {
-		var stageColumn = this._getStageColumn();
+	getFilters: function(stageId) {
+		var stageColumn = this.getStageColumn();
 		var caseSchemaUId = this.dcmCaseSchema.uId;
-		return this._createDcmFilters(caseSchemaUId, stageColumn.name, stageId);
+		return this.createDcmFilters(caseSchemaUId, stageColumn.name, stageId);
 	},
 
 	reloadData: function(config, callback, scope) {
 		callback = callback || Terrasoft.emptyFn;
 		var self = this;
-		Terrasoft.each(self.getItems(), function(kanbanColumn, next) {
+		Terrasoft.eachAsync(self.getItems(), function(kanbanColumn, next) {
 			var kanbanElements = kanbanColumn.get("ViewModelItems");
 			kanbanElements.clear();
-			kanbanElements.filters = self._getFilters(kanbanColumn.get("Id"));
+			kanbanElements.filters = self.getFilters(kanbanColumn.get("Id"));
 			kanbanElements.loadData(next, self);
-		}, callback, scope);
+		}, function() {
+			self.checkAllDataLoaded();
+			Ext.callback(callback, scope);
+		});
+		
 	},
 
-	_generateColumnName: function() {
+	generateColumnName: function() {
 		if (!this.sequentialIdGenerator) {
 			this.sequentialIdGenerator = new Ext.data.SequentialIdGenerator({prefix: "column"});
 		}
@@ -127,7 +149,7 @@ Ext.define("Terrasoft.CaseDataStorage", {
 		var caseSchemaUId = this.dcmCaseSchema.uId;
 		var stageColumnUId = this.dcmCaseSchema.stageColumnUId;
 		var stageColumn = this.entitySchema.findColumnByUId(stageColumnUId).name;
-		var filters = this._createDcmFilters(caseSchemaUId, stageColumn, config.Id);
+		var filters = this.createDcmFilters(caseSchemaUId, stageColumn, config.Id);
 		var groupName = viewModel.get("Connections");
 		var collection = Ext.create("Terrasoft.Kanban.DataStorage", {
 			itemClass: "Terrasoft.KanbanElementViewModel",
@@ -149,19 +171,26 @@ Ext.define("Terrasoft.CaseDataStorage", {
 				});
 				item.columns[stageColumn].type = Terrasoft.ViewModelColumnType.ENTITY_COLUMN;
 				self.fireEvent("beforeKanbanElementSave", item);
-				item.saveEntity(function() {
+				item.saveEntity(function(response) {
+					item.parentCollection.fireEvent("afterKanbanElementMoved", {
+						success: response.success
+					});
 					self.fireEvent("afterKanbanElementSaved", item);
+					if (response.success === false) {
+						self.fireEvent("errorSaveEntity", response);
+					}
 				}, this);
 			}
 		}, viewModel);
 		collection.on("loadcount", function(count) {
 			this.set("RecordsCount", count);
+			self.checkAllDataLoaded();
 		}, viewModel);
 		viewModel.set("ViewModelItems", collection);
 		this.add(viewModel.get("Id"), viewModel);
 	},
 
-	_initLastStageId: function(stages) {
+	initLastStageId: function(stages) {
 		var stage;
 		for(var i = stages.getCount() - 1; i >= 0; i--) {
 			stage = stages.getByIndex(i);
@@ -172,16 +201,16 @@ Ext.define("Terrasoft.CaseDataStorage", {
 		this.lastStageId = stage.stageRecordId;
 	},
 
-	_isLastStage: function(stages, stage) {
+	isLastStage: function(stages, stage) {
 		var parentStages = stages.filterByFn(function(item) {
 			return !item.parentStageUId;
 		});
 		return parentStages.last().stageRecordId === stage.stageRecordId;
 	},
 
-	_getColumnsConfig: function(dcmSchema) {
+	getColumnsConfig: function(dcmSchema) {
 		var stages = dcmSchema.stages;
-		this._initLastStageId(stages);
+		this.initLastStageId(stages);
 		var result = [];
 		stages.each(function(stage) {
 			var connections = dcmSchema.stageConnections.getOutgoingConnections(stage.uId);
@@ -194,12 +223,12 @@ Ext.define("Terrasoft.CaseDataStorage", {
 			var parentStage = stage.getParentStage();
 			var column = {
 				Id: stage.stageRecordId,
-				ColumnClassName: this._generateColumnName(),
+				ColumnClassName: this.generateColumnName(),
 				Caption: stage.caption.getValue(),
 				Color: stage.color,
 				ParentColumnId: parentStage && parentStage.stageRecordId,
 				IsSuccessful: stage.isSuccessful,
-				IsLast: this._isLastStage(stages, stage),
+				IsLast: this.isLastStage(stages, stage),
 				Connections: targetConnections
 			};
 			result.push(column);
@@ -207,7 +236,7 @@ Ext.define("Terrasoft.CaseDataStorage", {
 		return result;
 	},
 
-	_getAlternativeColumns: function(columns, columnId) {
+	getAlternativeColumnsisLastStage: function(columns, columnId) {
 		return columns.filter(function(x) {
 			return x.ParentColumnId === columnId && x.IsSuccessful;
 		}).map(function(x) {
@@ -215,16 +244,16 @@ Ext.define("Terrasoft.CaseDataStorage", {
 		}) || [];
 	},
 
-	_initColumns: function(dcmSchema) {
-		var columnsConfig = this._getColumnsConfig(dcmSchema);
+	initColumns: function(dcmSchema) {
+		var columnsConfig = this.getColumnsConfig(dcmSchema);
 		Terrasoft.each(columnsConfig, function(columnConfig) {
-			//todo move to _getColumnsConfig
-			columnConfig.AlternativeColumns = this._getAlternativeColumns(columnsConfig, columnConfig.Id);
+			//todo move to getColumnsConfig
+			columnConfig.AlternativeColumns = this.getAlternativeColumnsisLastStage(columnsConfig, columnConfig.Id);
 			this.createColumn(columnConfig);
 		}, this);
 	},
 
-	_createDcmFilters: function(caseSchemaUId, stageColumnName, stageId) {
+	createDcmFilters: function(caseSchemaUId, stageColumnName, stageId) {
 		var filters = Terrasoft.createFilterGroup();
 		filters.logicalOperation = Terrasoft.LogicalOperatorType.AND;
 		if (this.filters) {
@@ -247,7 +276,7 @@ Ext.define("Terrasoft.CaseDataStorage", {
 		return filters;
 	},
 
-	_createDataColumnsConfig: function(columnsConfig) {
+	createDataColumnsConfig: function(columnsConfig) {
 		var dataColumns = [];
 		for (var i = 0; i < columnsConfig.length; i++) {
 			var column = columnsConfig[i];
@@ -281,7 +310,7 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 		this.addEvent("beforeKanbanElementSave", "afterKanbanElementSaved");
 	},
 
-	_getColumnsIds: function(elementColumnsConfig) {
+	getColumnsIds: function(elementColumnsConfig) {
 		return elementColumnsConfig.map(function(i) {
 			return i.path;
 		});
@@ -307,8 +336,8 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 		this.lastStageFilters = config.lastStageFilters;
 		var columns = this.elementColumnConfig = config.elementColumnConfig || [];
 		var visibility = false;
-		if (Terrasoft.contains(this._getColumnsIds(columns), "CreatedOn")) {
-			var index = this._getColumnsIds(columns).indexOf("CreatedOn");
+		if (Terrasoft.contains(this.getColumnsIds(columns), "CreatedOn")) {
+			var index = this.getColumnsIds(columns).indexOf("CreatedOn");
 			this.elementColumnConfig.splice(index, 1);
 			visibility = true;
 		}
@@ -318,10 +347,10 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 			orderPosition: -1,
 			visibility: visibility
 		});
-		var stageColumn = this._getStageColumn();
+		var stageColumn = this.getStageColumn();
 		visibility = false;
-		if (Terrasoft.contains(this._getColumnsIds(columns), stageColumn.columnPath)) {
-			var index = this._getColumnsIds(columns).indexOf(stageColumn.columnPath);
+		if (Terrasoft.contains(this.getColumnsIds(columns), stageColumn.columnPath)) {
+			var index = this.getColumnsIds(columns).indexOf(stageColumn.columnPath);
 			this.elementColumnConfig.splice(index, 1);
 			visibility = true;
 		}
@@ -329,7 +358,7 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 			path: stageColumn.columnPath,
 			visibility: visibility
 		});
-		this._loadStatuses(this._initColumns, this);
+		this._loadStatuses(this.initColumns, this);
 	},
 
 	loadEntity: function (recordId, callback, scope) {
@@ -348,13 +377,13 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 		}, callback, scope);
 	},
 
-	_getStageColumn: function() {
+	getStageColumn: function() {
 		return this.entitySchema.getColumnByName("Status");
 	},
 
-	_getFilters: function(stageId) {
-		var stageColumn = this._getStageColumn();
-		return this._createDcmFilters(stageColumn.name, stageId);
+	getFilters: function(stageId) {
+		var stageColumn = this.getStageColumn();
+		return this.createDcmFilters(stageColumn.name, stageId);
 	},
 
 	reloadData: function(config, callback, scope) {
@@ -363,12 +392,12 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 		Terrasoft.each(self.getItems(), function(kanbanColumn, next) {
 			var kanbanElements = kanbanColumn.get("ViewModelItems");
 			kanbanElements.clear();
-			kanbanElements.filters = self._getFilters(kanbanColumn.get("Id"));
+			kanbanElements.filters = self.getFilters(kanbanColumn.get("Id"));
 			kanbanElements.loadData(next, self);
 		}, callback, scope);
 	},
 
-	_generateColumnName: function() {
+	generateColumnName: function() {
 		if (!this.sequentialIdGenerator) {
 			this.sequentialIdGenerator = new Ext.data.SequentialIdGenerator({prefix: "column"});
 		}
@@ -377,8 +406,8 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 
 	createColumn: function(config) {
 		var viewModel = this.createItem(config);
-		var stageColumn = this._getStageColumn();
-		var filters = this._createDcmFilters(stageColumn, config.Id);
+		var stageColumn = this.getStageColumn();
+		var filters = this.createDcmFilters(stageColumn, config.Id);
 		var groupName = viewModel.get("Connections");
 		var collection = Ext.create("Terrasoft.Kanban.DataStorage", {
 			itemClass: "Terrasoft.KanbanElementViewModel",
@@ -401,7 +430,10 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 				});
 				item.columns[stageColumnName].type = Terrasoft.ViewModelColumnType.ENTITY_COLUMN;
 				self.fireEvent("beforeKanbanElementSave", item);
-				item.saveEntity(function() {
+				item.saveEntity(function(response) {
+					item.parentCollection.fireEvent("afterKanbanElementMoved", {
+						success: response.success
+					});
 					self.fireEvent("afterKanbanElementSaved", item);
 				}, this);
 			}
@@ -413,7 +445,7 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 		this.add(viewModel.get("Id"), viewModel);
 	},
 
-	_initLastStageId: function(stages) {
+	initLastStageId: function(stages) {
 		return;
 		var stage;
 		for(var i = stages.getCount() - 1; i >= 0; i--) {
@@ -424,7 +456,7 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 		}
 	},
 
-	_isLastStage: function(stages, stage) {
+	isLastStage: function(stages, stage) {
 		var parentStages = stages.filterByFn(function(item) {
 			return !item.parentStageUId;
 		});
@@ -441,8 +473,8 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 		}, scope);
 	},
 
-	_getColumnsConfig: function(stages) {
-		this._initLastStageId(stages);
+	getColumnsConfig: function(stages) {
+		this.initLastStageId(stages);
 		var result = [];
 		var targetConnections = [];
 		stages.each(function(stage) {
@@ -452,7 +484,7 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 		stages.each(function(stage) {
 			var column = {
 				Id: stage.get("Id"),
-				ColumnClassName: this._generateColumnName(),
+				ColumnClassName: this.generateColumnName(),
 				Caption: stage.get("Name"),
 				Color: "#8ecb60",
 				IsSuccessful: true,
@@ -464,7 +496,7 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 		return result;
 	},
 
-	_getAlternativeColumns: function(columns, columnId) {
+	getAlternativeColumnsisLastStage: function(columns, columnId) {
 		return columns.filter(function(x) {
 			return x.ParentColumnId === columnId && x.IsSuccessful;
 		}).map(function(x) {
@@ -472,16 +504,16 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 		}) || [];
 	},
 
-	_initColumns: function(stages) {
-		var columnsConfig = this._getColumnsConfig(stages);
+	initColumns: function(stages) {
+		var columnsConfig = this.getColumnsConfig(stages);
 		Terrasoft.each(columnsConfig, function(columnConfig) {
-			//todo move to _getColumnsConfig
-			columnConfig.AlternativeColumns = this._getAlternativeColumns(columnsConfig, columnConfig.Id);
+			//todo move to getColumnsConfig
+			columnConfig.AlternativeColumns = this.getAlternativeColumnsisLastStage(columnsConfig, columnConfig.Id);
 			this.createColumn(columnConfig);
 		}, this);
 	},
 
-	_createDcmFilters: function(stageColumnName, stageId) {
+	createDcmFilters: function(stageColumnName, stageId) {
 		var filters = Terrasoft.createFilterGroup();
 		filters.logicalOperation = Terrasoft.LogicalOperatorType.AND;
 		if (this.filters) {
@@ -497,7 +529,7 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 		return filters;
 	},
 
-	_createDataColumnsConfig: function(columnsConfig) {
+	createDataColumnsConfig: function(columnsConfig) {
 		var dataColumns = [];
 		for (var i = 0; i < columnsConfig.length; i++) {
 			var column = columnsConfig[i];
@@ -612,18 +644,18 @@ Ext.define("Terrasoft.Kanban.DataStorage", {
 	},
 
 	insert: function() {
-		this._setTotalCount(this.totalCount + 1);
 		this.callParent(arguments);
+		this._setTotalCount(this.totalCount + 1);
 	},
 
 	removeByIndex: function() {
-		this._setTotalCount(this.totalCount - 1);
 		this.callParent(arguments);
+		this._setTotalCount(this.totalCount - 1);
 	},
 
 	clear: function() {
-		this._reset();
 		this.callParent(arguments);
+		this._reset();
 	},
 
 	reloadData: function() {
@@ -1096,9 +1128,18 @@ Ext.define("Terrasoft.controls.KanbanColumnViewModel", {
 	},
 
 	move: function(moveData) {
-		moveData.sourceCollection.removeByKey(moveData.itemId);
+		var movedId = moveData.itemId
 		var groups = this.getConnections();
 		moveData.item.set("GroupName", groups);
+		var movedFunction = function(response) {
+			if (!response.success) {
+				moveData.sourceCollection.loadEntity(movedId);
+				moveData.targetCollection.loadEntity(movedId);
+			}
+			moveData.targetCollection.un("afterKanbanElementMoved", movedFunction);
+		};
+		moveData.targetCollection.on("afterKanbanElementMoved", movedFunction, this);
+		moveData.sourceCollection.removeByKey(moveData.itemId);
 		moveData.targetCollection.insert(0, moveData.itemId, moveData.item);
 		return moveData.targetIndex;
 	},
@@ -1459,7 +1500,7 @@ Ext.define("Terrasoft.controls.KanbanElementViewModel", {
 
 });
 
-define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUtilities, ConfigurationEnums) {
+define("KanbanSection", ["PageUtilities", "ConfigurationEnums", "GridUtilities"], function(PageUtilities, ConfigurationEnums, GridUtilities) {
 	return {
 		//
 		attributes: {
@@ -1836,6 +1877,13 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 					: this.Ext.create("Terrasoft.CaseDataStorage");
 				storage.on("beforeKanbanElementSave", this.showBodyMask, this);
 				storage.on("afterKanbanElementSaved", this.hideBodyMask, this);
+				storage.on("errorSaveEntity", function(response) {
+					var message = response.errorInfo?.message;
+					this.showInformationDialog(message);
+				}, this)
+				storage.on("checkAllDataLoaded", function(result) {
+					this.set("LoadMoreButtonVisible", result.allDataLoaded);
+				}, this);
 				this.set("CaseDataStorage", storage);
 			},
 
@@ -2145,12 +2193,13 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums"], function(PageUt
 				"values": {
 					"itemType": Terrasoft.ViewItemType.BUTTON,
 					"style": this.Terrasoft.controls.ButtonEnums.style.TRANSPARENT,
-					"caption": "Load more data...",
+					"caption": GridUtilities.getLoadButtonConfig().caption,
 					"imageConfig": {
 						"source": Terrasoft.ImageSources.URL,
 						"url": "https://cdn4.iconfinder.com/data/icons/universal-7/614/5_-_Refresh-16.png"
 					},
-					"click": "$loadMore"
+					"click": "$loadMore",
+					"visible": "$LoadMoreButtonVisible"
 				}
 			}
 		]
