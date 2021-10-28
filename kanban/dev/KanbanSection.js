@@ -516,7 +516,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums", "GridUtilities"]
 			},
 
 			onElementDblClick: function(elementId) {
-				if (this.getIsFeatureEnabled("EnableKanbanForActivitySection") && this.hasMiniPage(this.entitySchemaName)) {
+				if (this.hasMiniPage(this.entitySchemaName)) {
 					this.openEditMiniPage(elementId);
 				} else {
 					this.editRecord(elementId);
