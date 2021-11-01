@@ -67,8 +67,11 @@ Ext.define("Terrasoft.controls.KanbanElementViewModel", {
 
 	getKanbanElementsAdditionalFields: function() {
 		var result = [];
-		var conlumnsConfig = this.get("ColumnsConfig");
-		Terrasoft.each(conlumnsConfig, function(columnConfig) {
+		var columnsConfig = this.get("ColumnsConfig");
+		var sortedColumns = Ext.Array.sort(columnsConfig, function(x, y) {
+			return x.position - y.position;
+		});
+		Terrasoft.each(sortedColumns, function(columnConfig) {
 			if (columnConfig.path !== (this.entitySchema && this.entitySchema.primaryDisplayColumnName)) {
 				if (columnConfig.visibility !== false) {
 					result.push(this.generateAdditionalColumnViewConfig(columnConfig));

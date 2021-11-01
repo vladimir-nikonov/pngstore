@@ -60,8 +60,10 @@ Ext.define("Terrasoft.CaseDataStorage", {
 		var schema = this.dcmCaseSchema = config.dcmCaseSchema;
 		var columns = this.elementColumnConfig = config.elementColumnConfig || [];
 		var visibility = false;
+		var createdOnPosition = 0;
 		if (Terrasoft.contains(this.getColumnsIds(columns), "CreatedOn")) {
 			var index = this.getColumnsIds(columns).indexOf("CreatedOn");
+			createdOnPosition = columns[index].position;
 			this.elementColumnConfig.splice(index, 1);
 			visibility = true;
 		}
@@ -69,7 +71,8 @@ Ext.define("Terrasoft.CaseDataStorage", {
 			path: "CreatedOn",
 			orderDirection: Terrasoft.OrderDirection.DESC,
 			orderPosition: -1,
-			visibility: visibility
+			visibility: visibility,
+			position: createdOnPosition
 		});
 		var stageColumn = this.getStageColumn();
 		visibility = false;
@@ -331,6 +334,7 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 		this.lastStageFilters = config.lastStageFilters;
 		var columns = this.elementColumnConfig = config.elementColumnConfig || [];
 		var visibility = false;
+		var position = 0;
 		if (Terrasoft.contains(this.getColumnsIds(columns), "CreatedOn")) {
 			var index = this.getColumnsIds(columns).indexOf("CreatedOn");
 			this.elementColumnConfig.splice(index, 1);

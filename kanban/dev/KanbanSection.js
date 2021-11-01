@@ -123,11 +123,15 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums", "GridUtilities"]
 				var obj = Ext.decode(profile, true);
 				var items = obj && obj.items;
 				var columns = [];
-				Terrasoft.each(items, function(item) {
+				var sortedColumns = Ext.Array.sort(items, function(x, y) {
+					return x.position.row - y.position.row;
+				});
+				Terrasoft.each(sortedColumns, function(item) {
 					columns.push({
 						path: item.bindTo,
 						dataValueType: item.dataValueType,
-						caption: item.caption
+						caption: item.caption,
+						position: item.position.row
 					});
 				}, this);
 				return columns;

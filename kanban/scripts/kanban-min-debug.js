@@ -65,8 +65,10 @@ Ext.define("Terrasoft.CaseDataStorage", {
 		var schema = this.dcmCaseSchema = config.dcmCaseSchema;
 		var columns = this.elementColumnConfig = config.elementColumnConfig || [];
 		var visibility = false;
+		var createdOnPosition = 0;
 		if (Terrasoft.contains(this.getColumnsIds(columns), "CreatedOn")) {
 			var index = this.getColumnsIds(columns).indexOf("CreatedOn");
+			createdOnPosition = columns[index].position;
 			this.elementColumnConfig.splice(index, 1);
 			visibility = true;
 		}
@@ -74,7 +76,8 @@ Ext.define("Terrasoft.CaseDataStorage", {
 			path: "CreatedOn",
 			orderDirection: Terrasoft.OrderDirection.DESC,
 			orderPosition: -1,
-			visibility: visibility
+			visibility: visibility,
+			position: createdOnPosition
 		});
 		var stageColumn = this.getStageColumn();
 		visibility = false;
@@ -336,6 +339,7 @@ Ext.define("Terrasoft.ActivityDataStorage", {
 		this.lastStageFilters = config.lastStageFilters;
 		var columns = this.elementColumnConfig = config.elementColumnConfig || [];
 		var visibility = false;
+		var position = 0;
 		if (Terrasoft.contains(this.getColumnsIds(columns), "CreatedOn")) {
 			var index = this.getColumnsIds(columns).indexOf("CreatedOn");
 			this.elementColumnConfig.splice(index, 1);
@@ -1412,8 +1416,11 @@ Ext.define("Terrasoft.controls.KanbanElementViewModel", {
 
 	getKanbanElementsAdditionalFields: function() {
 		var result = [];
-		var conlumnsConfig = this.get("ColumnsConfig");
-		Terrasoft.each(conlumnsConfig, function(columnConfig) {
+		var columnsConfig = this.get("ColumnsConfig");
+		var sortedColumns = Ext.Array.sort(columnsConfig, function(x, y) {
+			return x.position - y.position;
+		});
+		Terrasoft.each(sortedColumns, function(columnConfig) {
 			if (columnConfig.path !== (this.entitySchema && this.entitySchema.primaryDisplayColumnName)) {
 				if (columnConfig.visibility !== false) {
 					result.push(this.generateAdditionalColumnViewConfig(columnConfig));
@@ -1625,11 +1632,15 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums", "GridUtilities"]
 				var obj = Ext.decode(profile, true);
 				var items = obj && obj.items;
 				var columns = [];
-				Terrasoft.each(items, function(item) {
+				var sortedColumns = Ext.Array.sort(items, function(x, y) {
+					return x.position.row - y.position.row;
+				});
+				Terrasoft.each(sortedColumns, function(item) {
 					columns.push({
 						path: item.bindTo,
 						dataValueType: item.dataValueType,
-						caption: item.caption
+						caption: item.caption,
+						position: item.position.row
 					});
 				}, this);
 				return columns;
