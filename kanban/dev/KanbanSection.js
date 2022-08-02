@@ -241,6 +241,16 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums", "GridUtilities"]
 						baseDataViews.GridDataView.index = 1;
 						baseDataViews.AnalyticsDataView.index = 3;
 					}
+				} else if (this.getActiveViewNameFromProfile() == "Kanban") {
+					baseDataViews.Kanban = {
+						index: 1,
+						name: "Kanban",
+						caption: baseDataViews.GridDataView.caption,
+						hint: this.get("Resources.Strings.KanbanHint"),
+						icon: this.get("Resources.Images.KanbanViewIcon")
+					};
+					baseDataViews.GridDataView.index = 1;
+					baseDataViews.AnalyticsDataView.index = 3;
 				}
 			},
 
