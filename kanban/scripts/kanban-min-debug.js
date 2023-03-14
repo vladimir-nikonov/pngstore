@@ -1507,7 +1507,7 @@ Ext.define("Terrasoft.controls.KanbanElementViewModel", {
 
 });
 
-define("KanbanSection", ["PageUtilities", "ConfigurationEnums", "GridUtilities"], function(PageUtilities, ConfigurationEnums, GridUtilities) {
+define("KanbanSection", ["PageUtilities", "ConfigurationEnums", "GridUtilities", "DcmStageViewModel"], function(PageUtilities, ConfigurationEnums, GridUtilities) {
 	return {
 		//
 		attributes: {
