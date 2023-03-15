@@ -2,7 +2,7 @@
  * Kanban
  * Copyright(c) 2022, A.T.F
  */
-define("KanbanSection",["PageUtilities","ConfigurationEnums","GridUtilities","DcmStageViewModel","DcmStageContainer"],function(PageUtilities,ConfigurationEnums,GridUtilities){
+define("KanbanSection",["PageUtilities","ConfigurationEnums","GridUtilities","DcmStageViewModel","DcmStageContainer", "MainHeaderSchema"],function(PageUtilities,ConfigurationEnums,GridUtilities){
     
     Ext.define("Terrasoft.CaseDataStorage",{extend:"Terrasoft.BaseViewModelCollection",itemClass:"Terrasoft.KanbanColumnViewModel",dcmCaseSchema:null,pageRowCount:7,filters:null,elementColumnConfig:null,lastStageFilters:null,init:function(){this.callParent(arguments);this.addEvent("beforeKanbanElementSave","afterKanbanElementSaved","afterKanbanElementMoved","checkAllDataLoaded");},checkAllDataLoaded:function(){var allColumnsDataLoaded=false;var callback=Terrasoft.emptyFn;Terrasoft.each(this.getItems(),function(kanbanColumn){var totalRowsCount=kanbanColumn.get("RecordsCount");var currentRowsCount=kanbanColumn.get("ViewModelItems").getCount();if(totalRowsCount>currentRowsCount){allColumnsDataLoaded=true;}},callback,this);this.fireEvent("checkAllDataLoaded",{allDataLoaded:allColumnsDataLoaded});},getColumnsIds:function(elementColumnsConfig){return elementColumnsConfig.map(function(i){return i.path;});},setFilter:function(filters,lastStageFilters){var needReload=false;if(!Terrasoft.isEqual(this.filters,filters)){this.filters=filters;needReload=true;}
     if(!Terrasoft.isEqual(this.lastStageFilters,lastStageFilters)){this.lastStageFilters=lastStageFilters;needReload=true;}
