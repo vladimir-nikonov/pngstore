@@ -13,4 +13,6 @@ requirejs.config({
 		}
 	}
 });
-require(["atf_dashboarddesigner_overrides"]);
+setTimeout(() => {
+	require(["atf_dashboarddesigner_overrides"]);
+}, 5000);
