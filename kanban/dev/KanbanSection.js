@@ -109,12 +109,7 @@ define("KanbanSection", ["PageUtilities", "ConfigurationEnums", "GridUtilities",
 					var storage = this.get("CaseDataStorage");
 					var filters = this.getFilters();
 					var lastStageFilter = this.get("LastStageFilterData");
-					if (this.entitySchemaName == "Activity") {
-						storage.setFilter(filters, lastStageFilter);
-					} else {
-						filters = this.getSerializableFilter(this.getFilters());
-						storage.setFilter(filters, lastStageFilter);
-					}
+					storage.setFilter(filters, lastStageFilter);
 				} else {
 					this._loadKanbanStorage();
 				}
