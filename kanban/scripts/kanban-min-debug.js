@@ -679,7 +679,7 @@ Ext.define("Terrasoft.Kanban.DataStorage", {
 			var serializationInfo = filters.getDefSerializationInfo();
 			serializationInfo.serializeFilterManagerInfo = true;
 			var deserializedFilters = Terrasoft.deserialize(filters.serialize(serializationInfo));
-			esq.filters.add(deserializedFilters);
+			esq.filters.addItem(deserializedFilters);
 		}
 		return esq;
 	},
